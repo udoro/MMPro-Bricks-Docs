@@ -14,12 +14,13 @@ Adaptive Header Styling changes the header's look to match the section under it.
 
 1. In your Gumroad dashboard, find **Adaptive Header Styling** and copy the CSS and the JavaScript.
 2. Open your header template in Bricks.
-3. Add a **Code** element and paste in the CSS and the JavaScript.
-4. Make sure the code runs. If Bricks asks you to sign it, sign it. See [Installation](../getting-started.md#turn-on-code-execution).
+3. Add a **Code** element to the template, for example below the other code blocks.
+4. Paste the CSS into its CSS tab, and the JavaScript into its JS tab.
+5. Code execution must be on. If Bricks asks you to sign the code, sign it. See [Installation](../getting-started.md#turn-on-code-execution).
 
 ### 2. Turn on the sticky header
 
-Turn on **Sticky header** in the header template's settings. Adaptive Header Styling needs it.
+Adaptive Header Styling needs a sticky header. In the builder, open **Settings > Template Settings > Header** and turn on **Sticky header**.
 
 ### 3. Check the header selector
 
@@ -41,7 +42,7 @@ Add selectors to `wrapperSelectors` for any wrappers inside the header that also
 
 The header reads the background color of each section and picks light or dark text on its own. You don't need to mark anything for that.
 
-To give a section its own header style, add one of these attributes to it. They need no value.
+To give a section its own header style, add one of these attributes to it, and leave its **Value** empty. See [Change an attribute](../README.md#change-an-attribute).
 
 | Attribute | Section type | Class added to `<body>` |
 | --- | --- | --- |
@@ -78,7 +79,7 @@ It also sets the `--current-header-bg` variable to the header's current backgrou
 
 ## Customize the look
 
-Set Mega Menu Pro variables inside these classes. The CSS you pasted already has examples.
+Set Mega Menu Pro variables inside these classes, in the CSS tab of the Code element you added in step 1. The CSS you pasted already has examples.
 
 ```css
 /* Dark sections */
@@ -140,6 +141,8 @@ Set Mega Menu Pro variables inside these classes. The CSS you pasted already has
 }
 ```
 
+In the last example, change `.mega-menu-magic__dropdown-title` to the class of your own titles.
+
 ### Style the header over an excluded section
 
 ```css
@@ -147,6 +150,8 @@ Set Mega Menu Pro variables inside these classes. The CSS you pasted already has
   background: #your-color !important;
 }
 ```
+
+Change `#your-color` to your own color, such as `#1a1a1a`.
 
 ***
 

@@ -38,7 +38,7 @@ New versions show up in **Dashboard > Updates**, like any other plugin.
 
 The skills files teach your agent how Mega Menu Pro works in Bricks.
 
-1. Open your project folder and start an agent session there.
+1. Make a folder on your computer for this work, for example `Mega Menu Pro`. Open it in your agent and start a session there.
 2. Paste this into the chat and send it:
 
 ```
@@ -50,7 +50,7 @@ https://raw.githubusercontent.com/udoro/MMPro-Bricks-Docs/main/ai-connector/mmpr
 
 To update the skills later, paste the same message again.
 
-**Prefer a manual download?** [Download this repository](https://github.com/udoro/MMPro-Bricks-Docs/archive/refs/heads/main.zip), copy the `ai-connector/mmpro-bricks-skills` folder into your project, and point your agent at `mmpro-bricks-skills/mega-menu-pro-bricks-skills.md`.
+**Prefer a manual download?** [Download this repository](https://github.com/udoro/MMPro-Bricks-Docs/archive/refs/heads/main.zip), copy the `ai-connector/mmpro-bricks-skills` folder into your project folder, and tell your agent to read `mmpro-bricks-skills/mega-menu-pro-bricks-skills.md`.
 
 ***
 
@@ -92,7 +92,7 @@ The agent keeps a file called `mmpro-bricks-user-context.md` next to the skills 
 
 ## Tips
 
-* **Start each session with the skills file.** Agents don't remember earlier sessions.
+* **Start each session by telling your agent to read `mmpro-bricks-skills/mega-menu-pro-bricks-skills.md`.** Agents don't remember earlier sessions.
 * **Check the result on your site.** The agent checks your published pages, but it can't see inside your Bricks builder.
 * **Undo a change** from the header template's revisions in Bricks. Every change the agent saves makes a new revision first.
 
@@ -127,7 +127,12 @@ Before you run it in a terminal, replace both placeholders. Keep the colon betwe
 
 Copy the line it prints. That's your token. Keep it private, like the password.
 
-**2. Swap the server.** Remove the old server from your agent's MCP settings. Then, in Claude Code, open a terminal in your project folder and run:
+**2. Swap the server.** First remove the old server:
+
+* In Claude Code, run `claude mcp list` to see the old server's name. Then run `claude mcp remove` followed by that name, for example `claude mcp remove my-old-site`.
+* In other agents, delete the old server's entry from their MCP settings.
+
+Then add the new server. In Claude Code, open a terminal in your project folder and run:
 
 ```bash
 claude mcp add --transport http my-bricks-site https://your-site.com/wp-json/mcp/mcp-adapter-default-server --header "Authorization: Basic YOUR_TOKEN"

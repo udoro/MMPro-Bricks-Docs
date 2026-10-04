@@ -21,25 +21,26 @@ This page covers version **1.3.1**.
 
 ### Option 1: Template element (recommended)
 
-1. Import the Tabbed Navigation template in **Bricks > Templates**.
+1. In WordPress, go to **Bricks > Templates**, click **Import**, and import the Tabbed Navigation template file.
 2. In your header template, select the mega menu's **Content** element.
 3. Add a **Template** element inside it and pick the Tabbed Navigation template.
 4. Turn on **Render without wrapper**. The menu's HTML stays valid with it on.
+5. Delete the old **Content Inner** element from that **Content** element. The Tabbed Navigation takes its place.
 
 This keeps your header template tidy and gives you more room to edit the tabs.
 
 ### Option 2: Copy it in
 
-Copy the whole Tabbed Navigation into the mega menu's **Content** element. This works, but the header gets crowded to edit.
+Copy the whole Tabbed Navigation into the mega menu's **Content** element, then delete the old **Content Inner** element. This works, but the header gets crowded to edit.
 
 ### The code
 
-The CSS and JavaScript are in the **Tabbed navigation code** code block.
+The CSS and JavaScript come with the template, in the **Tabbed navigation code** code block.
 
-* **JavaScript:** move it to your header template or a code manager, so it loads once even if you use more than one Tabbed Navigation.
-* **CSS:** if you use more than one Tabbed Navigation, move it to a stylesheet so it isn't loaded twice.
+* **JavaScript:** cut it from that block's JS tab and paste it into a Code element in your header template, or into your code manager. Then it runs once, even if you use more than one Tabbed Navigation.
+* **CSS:** leave it in the template, so the builder preview shows the styles. If you use more than one Tabbed Navigation, move it to your site's stylesheet instead, so it doesn't load twice.
 
-Sign the code block after you move or change it. See [Installation](../getting-started.md#turn-on-code-execution).
+Sign the code after you move or change it. See [Installation](../getting-started.md#turn-on-code-execution).
 
 ***
 
@@ -64,20 +65,20 @@ Tabbed Nav Container          (attributes go here)
 
 ### First level: parent categories
 
-1. Turn on the query loop on **tabbed nav li**.
+1. Select **tabbed nav li** and turn on **Use query loop**.
 2. Set the query to **Terms > Product categories**.
 3. Set **Parent** to `0`, so it lists top-level categories.
 4. Exclude `uncategorized`.
 5. Turn on **Show empty** if you want categories with no products.
-6. Set the button text to the term name.
+6. Set the button text to the `{term_name}` dynamic tag.
 
 ### Second level: subcategories
 
-1. Inside the tab's content, loop an `li`.
+1. Inside **tabbed nav content inner**, select the list item (`li`) for your links and turn on **Use query loop**.
 2. Set the query to **Terms > Product categories**.
-3. Set **Parent** to the term ID from the parent loop.
+3. Set **Parent** to the `{term_id}` dynamic tag. It gives the ID of the category from the first level.
 4. Turn on **Show empty** if you need it.
-5. Set the text to the term name.
+5. Set the link text to the `{term_name}` dynamic tag.
 
 ### Third level and more
 

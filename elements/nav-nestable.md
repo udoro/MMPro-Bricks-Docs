@@ -6,11 +6,11 @@ icon: bars
 
 The **Nav (Nestable)** element holds the menu. It has the class `dwc-nest-menu`. Its attributes control the menu, the mobile menu, offcanvas and sidebar modes, and mega menu width.
 
-To change a setting, select **Nav (Nestable)**, open its attributes, and change the value. The attributes are already there. You don't need to add them.
+To change a setting, select **Nav (Nestable)**, open **Style > Attributes**, and change the value. The attributes are already there. You don't need to add them. See [Change an attribute](../README.md#change-an-attribute).
 
-`true` turns a setting on. An empty value turns it off.
+`true` turns a setting on. To turn it off, clear the value and leave the attribute in place.
 
-Leave Bricks' own **Mobile menu** setting on this element set to **Never**. Mega Menu Pro runs the mobile menu itself.
+Leave Bricks' own **Mobile menu > Show at breakpoint** setting on this element set to **Never**. Mega Menu Pro runs the mobile menu itself.
 
 ***
 
@@ -56,7 +56,7 @@ See [Mobile, Offcanvas & Sidebar](../mobile-offcanvas-sidebar.md).
 | `data-match-overlay-header-width` | `true` | With an overlay header on mobile and `data-slide-in-direction` set to `top`, the menu matches the header's width and grows down from it. Also works without an overlay header. |
 | `data-back-text` | `auto` | Text of the back bar. `auto` uses the menu item's name, such as "Back to Products". Any other text replaces it. |
 | `data-hide-close-bar` | Empty | Set to `true` to hide the back bar. |
-| `data-mobile-top-transparent` | `true` | Places the back bar over the header, with the logo showing until a submenu opens. Keep it on. |
+| `data-mobile-top-transparent` | `true` | Places the back bar over the header, with the logo showing until a submenu opens. Leave it on. |
 | `data-show-mobile-logo` | Empty | Set to `true` to show the logo in the mobile menu. |
 | `data-show-toggle-always` | `true` | Keeps the menu toggle on screen while a submenu is open. Works when `data-submenu-reveal` is `slide`. |
 | `data-tooltip-back-text` | `Swipe > back to` | **Full.** Text of the swipe hint. Needs the `swipeToClose` and `toolTip` options on. |

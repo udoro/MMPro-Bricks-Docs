@@ -30,12 +30,12 @@ Both versions share the same menu, mega menus, mobile menu and styling. Lite lea
 | --- | --- | --- |
 | Mega menus, dropdowns, mobile menu | Yes | Yes |
 | Overlay header, sticky styles, centered logo | Yes | Yes |
-| Breakout, breakin and breakinto | Yes | Yes |
-| Offcanvas navigation on desktop | Yes | No |
-| Sidebar navigation | Yes | No |
-| Adaptive height and Stripe style | Yes | No |
-| Swipe to close and its tooltip | Yes | No |
-| Auto menu expansion | Yes | No |
+| [Breakout, breakin and breakinto](moving-elements.md) (moving elements in and out of the mobile menu) | Yes | Yes |
+| [Offcanvas navigation](mobile-offcanvas-sidebar.md#offcanvas-navigation) on desktop | Yes | No |
+| [Sidebar navigation](mobile-offcanvas-sidebar.md#sidebar-navigation) | Yes | No |
+| [Adaptive height and Stripe style](menu-options.md#menu-options) (animated mega menu panel) | Yes | No |
+| [Swipe to close](mobile-offcanvas-sidebar.md#swipe-to-close) and its tooltip | Yes | No |
+| [Auto menu expansion](menu-options.md#menu-options) (opens the current page's submenu) | Yes | No |
 
 ***
 
@@ -48,3 +48,13 @@ You change Mega Menu Pro in three places:
 3. **JavaScript options** in the JS tab of the same code block. These control behavior, such as the breakpoint or Stripe style. See [Menu Options](menu-options.md).
 
 You don't need to touch the other code blocks. See [Code Blocks](elements/code-blocks.md).
+
+### Change an attribute
+
+1. In the builder, select the element in the Structure panel, for example **Nav (Nestable)**.
+2. Open the **Style** tab, then **Attributes**.
+3. Find the attribute by its **Name** and change its **Value**.
+
+Most attributes are already on the template's elements. To turn a setting off, clear its **Value** and leave the attribute where it is, so you can turn it on again later.
+
+Some pages ask you to add an attribute that isn't there yet. Add a new attribute in **Attributes**, type its name in **Name**, and type the value in **Value**. If the page says it needs no value, leave **Value** empty.

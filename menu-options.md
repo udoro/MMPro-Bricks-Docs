@@ -11,12 +11,13 @@ To change an option:
 1. Select the **MENU Styles / Options** code block.
 2. Open its JS tab.
 3. Change the value after the option's name. `1` and `true` turn an option on. `0` and `false` turn it off.
+4. Keep the comma at the end of the line, and keep the quotes around text values such as `'#brx-header'`.
 
 ***
 
 ## Menu options
 
-These are in `MegaMenuCONFIG`. Options marked **Full** aren't in Lite.
+These are inside `const MegaMenuCONFIG = { ... }` at the top of the JS tab. Options marked **Full** aren't in Lite.
 
 | Option | Default | What it does |
 | --- | --- | --- |
@@ -42,7 +43,7 @@ These are in `MegaMenuCONFIG`. Options marked **Full** aren't in Lite.
 
 ## Centered logo
 
-These options are in `CenteredLogoCONFIG`. They place your logo in the middle of the menu items on desktop.
+These options are inside `const CenteredLogoCONFIG = { ... }`, below the menu options in the JS tab. They place your logo in the middle of the menu items on desktop.
 
 | Option | Default | What it does |
 | --- | --- | --- |
@@ -76,8 +77,8 @@ The breakpoint is where the desktop menu switches to the mobile menu. By default
 You set it in three code blocks. Change all three, or the menu breaks between the two values.
 
 1. **MENU Styles / Options**, JS tab: set `minWidth` to your new desktop width, for example `1025`.
-2. **MEDIA QUERY** (called **MENU Media Query** in Lite): change every `1200px` to your new mobile width, for example `1024px`.
-3. **MEGA MENU Codes**: change `1201px` to your new desktop width, and every `1200px` to your new mobile width.
+2. **MEDIA QUERY** (called **MENU Media Query** in Lite), CSS tab: change both `1200px` values to your new mobile width, for example `1024px`.
+3. **MEGA MENU Codes**, CSS tab: change the one `1201px` to your new desktop width, for example `1025px`. Then change every `1200px` to your new mobile width. Full has two, Lite has one.
 
 The desktop width is always 1px more than the mobile width.
 
@@ -85,4 +86,4 @@ The desktop width is always 1px more than the mobile width.
 **Don't raise the breakpoint to show the mobile menu on desktop.** Use offcanvas mode instead. See [Mobile, Offcanvas & Sidebar](mobile-offcanvas-sidebar.md#offcanvas-navigation).
 {% endhint %}
 
-[Tabbed Navigation](add-ons/tabbed-navigation.md) has its own breakpoint. If you use it, change it to match.
+[Tabbed Navigation](add-ons/tabbed-navigation.md) has its own breakpoint. If you use it, change it to match. See [its breakpoint steps](add-ons/tabbed-navigation.md#breakpoint).

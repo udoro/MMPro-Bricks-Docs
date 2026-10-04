@@ -18,7 +18,7 @@ Nav items
         └── Content Inner
 ```
 
-To add a menu item, duplicate one of the same kind and change its text and link.
+To add a menu item, duplicate one of the same kind: right-click it in the Structure panel and choose **Duplicate**. Then change its text and link.
 
 ***
 

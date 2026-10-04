@@ -10,10 +10,11 @@ icon: desktop-arrow-down
 
 1. Download the JSON file from your Gumroad dashboard. Pick **Full** or **Lite** (see [Full or Lite](README.md#full-or-lite)).
 2. In WordPress, go to **Bricks > Templates** and click **Import**.
-3. Select the JSON file. If you see **Import images**, you can tick it.
+3. Select the JSON file. If you see **Import images**, tick it if you want the template's images too.
 4. Click **Import**.
-5. Set the template's conditions, for example **Entire website**, so the header shows on your pages.
-6. Click **Edit with Bricks**.
+5. Open the new template with **Edit with Bricks**.
+6. In the builder, open **Settings > Template Settings > Conditions** and add a condition, for example **Entire website**. This makes the header show on your pages.
+7. Click **Save**.
 
 ### Turn on code execution
 
@@ -72,10 +73,12 @@ New templates and fixes show up in the remote templates list on their own. A tem
 
 ### Use a starter template
 
-1. In the builder, click the **Templates** icon in the top bar.
-2. In the **Source** dropdown, pick the remote templates you added.
-3. Insert the template into the mega menu dropdown's **Content** element.
-4. Delete the existing **Content Inner** element that was there.
+1. In the builder, select the mega menu's **Content** element in the Structure panel.
+2. Click the **Templates** icon in the top bar.
+3. In the **Source** dropdown, pick the remote templates you added.
+4. Insert the template you want.
+5. Check it sits inside **Content**. If it doesn't, drag it there in the Structure panel.
+6. Delete the old **Content Inner** element that was already in **Content**.
 
 A starter template replaces the Content Inner element. Don't put it inside Content Inner, because every starter template is already a Content Inner element.
 

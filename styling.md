@@ -10,7 +10,8 @@ To change a style:
 
 1. Select the **MENU Styles / Options** code block.
 2. Open its CSS tab.
-3. Change the value of the variable.
+3. Find the variable. Most are in the `:root` rule near the top.
+4. Change only its value: the part between the colon and the semicolon. Keep the semicolon.
 
 Don't add CSS to the code blocks marked "don't edit". See [Code Blocks](elements/code-blocks.md).
 
@@ -50,7 +51,7 @@ To style the header once it's sticky, copy variables into this rule and set new 
 }
 ```
 
-Turn on the sticky header in the header template's settings first.
+Turn on the sticky header first: in the builder, open **Settings > Template Settings > Header** and turn on **Sticky header**.
 
 ***
 
@@ -137,7 +138,7 @@ The tables list the defaults from the Full template. Variables marked **Full** a
 | `--chevron-clr` | `var(--menu-item-clr)` | Dropdown arrow color. |
 | `--chevron-hover-clr` | `var(--menu-item-hover-clr)` | Dropdown arrow hover color. |
 
-To stop a link from getting the active style, add the class `dwc-exclude` to its container.
+To stop a link from getting the active style, add the class `dwc-exclude` to the link, or to an element that holds it.
 
 ### Multilevel dropdown links
 
@@ -285,7 +286,7 @@ This preset gives an overlay header a see-through look before you scroll, with w
 
 To turn it on:
 
-1. Turn on the sticky header in the header template's settings.
+1. Turn on the sticky header: in the builder, open **Settings > Template Settings > Header** and turn on **Sticky header**.
 2. Set the `data-overlay-header` attribute on the **Header Pro** element to `true`.
 3. Set the `data-sticky-overlay-special-style` attribute on the same element to `true`.
 
@@ -300,8 +301,8 @@ Two variables in this section control the speed of the change before you scroll:
 
 ### Use the special styles on one page only
 
-1. Open the page's settings: **Settings > General**.
-2. In **CSS classes (body)**, add `home-page`.
+1. Edit the page with Bricks, then open **Settings > Page Settings > General**.
+2. In **CSS classes (body)**, add `home-page`. You can use any class name, as long as you use the same one in step 4.
 3. Open your header template, then the CSS tab of **MENU Styles / Options**.
 4. In the **STICKY HEADER WITH OVERLAY SPECIAL STYLES** section, change every `.bricks-is-frontend` to `.bricks-is-frontend.home-page`.
 

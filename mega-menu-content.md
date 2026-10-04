@@ -18,9 +18,13 @@ Dropdown                (Mega menu on)
 
 Don't put your content straight into the **Content** element. Put a **Content Inner** element in first, then build inside it.
 
+The template's mega menus already have a Content Inner. You only need these steps for a mega menu that doesn't have one.
+
 1. Select the mega menu's **Content** element.
-2. Add a **Block** element inside it and set its HTML tag to `li`.
-3. Build your layout inside this block.
+2. Add a **Block** element inside it.
+3. Set the block's HTML tag to `li`. If `li` isn't in the list, pick **Custom** and type `li`.
+4. Rename the block to **Content Inner** in the Structure panel, so it's easy to find.
+5. Build your layout inside this block.
 
 Use Content Inner for layout, such as grid or flex. Layout styles on Content itself can break the mobile menu, mainly when submenus expand, and the panel loses its padding.
 
@@ -48,7 +52,7 @@ A mega menu is never wider than the screen.
 
 ### Make every mega menu full width
 
-1. Select the **Nav (Nestable)** element and open its attributes.
+1. Select the **Nav (Nestable)** element and open **Style > Attributes**.
 2. Set `data-global-content-width` to `#brx-header`.
 3. Leave `data-content-width` empty on every mega menu's **Content** element. A value there wins over the global one.
 

@@ -40,10 +40,6 @@ icon: arrows-retweet
 * **The `data-content-width` and `data-global-content-width` attributes take any value.** Use a number with or without `px`, a CSS variable, or a selector.
 * **Set your own screen width right in the `data-breakout-link` and `data-breakin` attributes,** like `data-breakin="767"`. You don't need a separate `data-breakpoint` attribute anymore.
 
-### Deprecated
-
-* The `data-align-content-bottom` attribute. Use `data-global-content-vertical` instead.
-
 ***
 
 ## Version 1.4

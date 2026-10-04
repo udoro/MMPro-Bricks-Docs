@@ -12,6 +12,8 @@ Three attributes move elements between the header and the mobile menu as the scr
 | `data-breakin` | Any element from the header into the mobile menu | Search, social icons or a phone number that should go inside the mobile menu |
 | `data-breakinto` | Any element into any container you choose | Anything else, such as moving an element into a top bar |
 
+Add the attribute to the element you want to move. See [Change an attribute](README.md#change-an-attribute).
+
 ***
 
 ## data-breakout-link
@@ -64,7 +66,7 @@ Target it through the container. For example, to change a text color once it's i
 
 Moves an element into any container, below the breakpoint or a width you choose.
 
-Set the value to the container's selector. To use your own width, add a pipe and the width after it.
+Set the value to the container's selector, such as its class or ID. To use your own width, add a bar (`|`) and the width after it.
 
 ```
 data-breakinto=".my-div-class"          moves into .my-div-class below the breakpoint

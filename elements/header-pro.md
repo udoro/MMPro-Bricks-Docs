@@ -6,9 +6,9 @@ icon: window-maximize
 
 **Header Pro** is the outer element of the header. In the Structure panel it's labelled "Header Pro | v1.4.5". It holds the header settings, mainly the overlay header.
 
-To change a setting, select **Header Pro**, open its attributes, and change the value. The attributes are already there. You don't need to add them.
+To change a setting, select **Header Pro**, open **Style > Attributes**, and change the value. The attributes are already there. You don't need to add them. See [Change an attribute](../README.md#change-an-attribute).
 
-`true` turns a setting on. An empty value turns it off.
+`true` turns a setting on. To turn it off, clear the value and leave the attribute in place.
 
 ***
 
@@ -32,7 +32,7 @@ To change a setting, select **Header Pro**, open its attributes, and change the 
 
 ## Turn a setting off on one page
 
-Add these attributes to the first section or div of a page. They need no value.
+Add these attributes to the first section or div of a page, and leave their **Value** empty. See [Change an attribute](../README.md#change-an-attribute).
 
 | Attribute | What it does |
 | --- | --- |
@@ -43,8 +43,11 @@ Add these attributes to the first section or div of a page. They need no value.
 
 ## See-through overlay header on mobile
 
-The overlay header's transparency normally only applies on desktop. Some mobile menu styles need it off.
+On mobile, the overlay header is solid by default, because some mobile menu styles need it. To keep it see-through on mobile, with its blur, set `data-allow-overlay-mobile-opacity` to `true`.
 
-With `data-allow-overlay-mobile-opacity` on, you get the header's blur on mobile. But if the menu opens from the top and `data-match-overlay-header-width` is `true`, the menu looks like it slides down from behind the header. Without this attribute, the header looks like it grows down to show the menu.
+This changes one thing. When the menu opens from the top and `data-match-overlay-header-width` is `true`:
 
-Set the overlay header's transparency with an `rgba` color in `--overlay-header-bg`.
+* With this attribute on, the menu looks like it slides down from behind the header.
+* With it off, the header looks like it grows down to show the menu.
+
+Set how see-through the header is with an `rgba` color in `--overlay-header-bg`, for example `rgb(255 255 255 / 70%)`.

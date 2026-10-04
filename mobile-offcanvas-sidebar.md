@@ -6,9 +6,9 @@ icon: mobile
 
 Below the breakpoint, the menu becomes a mobile menu that opens from the menu toggle. To change the breakpoint, see [Menu Options](menu-options.md#breakpoint).
 
-Mega Menu Pro runs the mobile menu itself. Leave Bricks' own **Mobile menu** setting on the Nav (Nestable) element set to **Never**.
+Mega Menu Pro runs the mobile menu itself. On the Nav (Nestable) element, leave Bricks' own **Mobile menu > Show at breakpoint** setting on **Never**.
 
-Most mobile settings are attributes on the **Nav (Nestable)** element. See [Nav (Nestable)](elements/nav-nestable.md) for the full list.
+Most mobile settings are attributes on the **Nav (Nestable)** element. See [Nav (Nestable)](elements/nav-nestable.md) for the full list, and [Change an attribute](README.md#change-an-attribute) for how to set one.
 
 ***
 
@@ -44,7 +44,7 @@ When a submenu slides in, a back bar shows at the top.
 
 * `data-back-text` sets its text. Use `auto` to show the name of the menu item, such as "Back to Products". Any other text replaces it, for example `Back`.
 * `data-hide-close-bar` set to `true` hides the bar.
-* `data-mobile-top-transparent` set to `true` places the bar over the header, with your logo showing until a submenu opens. Keep it on.
+* `data-mobile-top-transparent` set to `true` places the bar over the header, with your logo showing until a submenu opens. The template has it on. Leave it on.
 
 ### Menu toggle
 
@@ -90,7 +90,7 @@ By default, the mobile menu fills the screen height. To make it fit its content:
 
 1. On **Header Pro**, set `data-overlay-header` and `data-overlay-header-mobile` to `true`.
 2. In the **MENU Styles / Options** CSS tab, set `--overlay-header-inset` to `0px`. Keep the `px`.
-3. Set the overlay header's width and radius to suit your design. For a full-width header, set `--overlay-header-width` to `100%`.
+3. Set `--overlay-header-width` and `--overlay-header-radius` to suit your design. For a full-width header, set `--overlay-header-width` to `100%`.
 4. On **Nav (Nestable)**, set `data-slide-in-direction` to `top`.
 5. Optional: on **Nav (Nestable)**, set `data-submenu-reveal` to `expand`.
 

@@ -27,7 +27,7 @@ The item has the `data-breakout-link` attribute, which moves it into the header 
 
 When the offcanvas or mobile menu opens, the page stops scrolling and the scrollbar disappears. The page shifts by the width of the scrollbar.
 
-To stop the shift, add this CSS:
+To stop the shift, add this CSS at the bottom of the CSS tab of **MENU Styles / Options**:
 
 ```css
 body.no-scroll {
@@ -45,8 +45,9 @@ To hide the dark overlay behind the open menu, set the `data-hide-overlay` attri
 
 Don't put the Logo element inside the **Logowrap** element. Instead:
 
-1. Add the class `dwc-nest-menu__logo` to the Logo element.
-2. Delete the Logowrap element.
+1. Add the Logo element next to the **Logowrap** element, in the same place.
+2. Add the class `dwc-nest-menu__logo` to the Logo element.
+3. Delete the Logowrap element.
 
 ***
 
@@ -58,7 +59,7 @@ The closest effect is Adaptive height. Turn on the `adaptiveHeight` option. See 
 
 ## The adaptive height background is the same color as the header
 
-Wrap the header's container (the direct child of **Header Pro**) in a **Block** element. The block takes the header's background, and the adaptive height background shows behind it. Header Pro's left and right padding moves to the block on its own.
+Add a **Block** element inside **Header Pro**, then drag the header's **Container** (the element directly inside Header Pro) into the block. The block takes the header's background, and the adaptive height background shows behind it. Header Pro's left and right padding moves to the block on its own.
 
 ***
 

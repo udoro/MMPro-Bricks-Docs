@@ -6,6 +6,8 @@ icon: code
 
 Mega Menu Pro's CSS and JavaScript live in code blocks inside the header template. Bricks must have code execution on to run them. See [Installation](../getting-started.md#turn-on-code-execution).
 
+Some steps below mention a **code manager**. That's a plugin that loads your CSS and JavaScript across the whole site, such as WPCodeBox. You don't need one: the code blocks work fine where they are.
+
 ***
 
 ## The code blocks
