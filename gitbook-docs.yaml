@@ -1,0 +1,41 @@
+$schema: https://api.gitbook.com/gitbook-docs.yaml
+site:
+  title: Bricks Mega Menu Pro + Header Builder
+  structure:
+    - type: section
+      key: section-docs
+      title: Docs
+      path: docs
+      default: true
+      children:
+        - type: space
+          key: space-docs
+          title: Docs
+          path: docs
+          default: true
+          content:
+            directory: ./
+    - type: section
+      key: section-changelog
+      title: Changelog
+      path: changelog
+      children:
+        - type: space
+          key: space-changelog
+          title: Changelog
+          path: changelog
+          default: true
+          content:
+            directory: ./changelog
+    - type: section
+      key: section-ai-connector
+      title: AI Connector
+      path: ai-connector
+      children:
+        - type: space
+          key: space-ai-connector
+          title: AI Connector
+          path: ai-connector
+          default: true
+          content:
+            directory: ./ai-connector
