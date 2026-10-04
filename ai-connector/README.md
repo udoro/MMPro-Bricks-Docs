@@ -147,6 +147,6 @@ For other agents, add this to their MCP settings:
 }
 ```
 
-Put in your own site address and token.
+Put in your own site address and token. `my-bricks-site` is only a name for the server, so you can use any name you like, such as your site's name.
 
 **3. Start a new agent session.** Agents only load MCP servers when a session starts.
