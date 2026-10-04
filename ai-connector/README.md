@@ -11,10 +11,7 @@ The AI Connector lets an AI agent work on your Mega Menu Pro header in Bricks. Y
 ## What you need
 
 * **Bricks 2.4 or later**, with Mega Menu Pro's header template imported.
-* The **WordPress MCP Adapter** plugin, installed and active.
-* The **MMPro AI Abilities** plugin, installed and active. Without it, the agent can read your header but can't save changes to it.
-* [Node.js](https://nodejs.org) 18 or later.
-* An **AI coding agent that can use MCP tools and run terminal commands**, such as [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) or [Cursor](https://www.cursor.com).
+* An **AI agent that can use MCP tools**, such as [Claude Code](https://docs.claude.com/en/docs/claude-code/overview), [Codex](https://openai.com/codex/) or [Cursor](https://www.cursor.com).
 
 A chat window with no tools won't work.
 
@@ -22,11 +19,11 @@ A chat window with no tools won't work.
 
 ## Set it up
 
-### Step 1: Turn on Bricks abilities
+### Step 1: Set up the Bricks MCP server
 
-1. In WordPress, go to **Bricks > AI**.
-2. Turn on **Enable Bricks abilities**.
-3. Check the adapter status on the same screen. It should show the MCP Adapter as active.
+Follow this video: [How to Set Up the Bricks MCP Server (Bricks 2.4+)](https://youtu.be/JVsinkC7psM).
+
+Come back here once your agent is connected to your site.
 
 ### Step 2: Install MMPro AI Abilities
 
@@ -37,66 +34,23 @@ A chat window with no tools won't work.
 
 New versions show up in **Dashboard > Updates**, like any other plugin.
 
-### Step 3: Create an application password
+### Step 3: Add the skills files
 
-1. In WordPress, go to **Users > Profile**.
-2. Under **Application Passwords**, enter a name, for example "AI agent", and click **Add**.
-3. Copy the password. You'll only see it once.
+The skills files teach your agent how Mega Menu Pro works in Bricks.
 
-Use an administrator account. Don't share this password, and revoke it when you stop using the agent.
+1. Open your project folder and start an agent session there.
+2. Paste this into the chat and send it:
 
-### Step 4: Connect your agent to the site
-
-Your agent connects straight to your site over HTTP.
-
-**1. Make your sign-in token.** Run this in a terminal, with your WordPress username and the application password from step 3:
-
-```bash
-node -e "console.log(Buffer.from('your-username:xxxx xxxx xxxx xxxx xxxx xxxx').toString('base64'))"
+```
+Use curl to download these three files into a folder called mmpro-bricks-skills in this project. Then read mmpro-bricks-skills/mega-menu-pro-bricks-skills.md and follow it.
+https://raw.githubusercontent.com/udoro/MMPro-Bricks-Docs/main/ai-connector/mmpro-bricks-skills/mega-menu-pro-bricks-skills.md
+https://raw.githubusercontent.com/udoro/MMPro-Bricks-Docs/main/ai-connector/mmpro-bricks-skills/mega-menu-pro-bricks-skills-build.md
+https://raw.githubusercontent.com/udoro/MMPro-Bricks-Docs/main/ai-connector/mmpro-bricks-skills/mega-menu-pro-bricks-skills-reference.md
 ```
 
-Copy the line it prints. That's your token. Keep it private, like the password.
+To update the skills later, paste the same message again.
 
-**2. Add the server.** In Claude Code, open a terminal in the project folder you'll work from and run:
-
-```bash
-claude mcp add --transport http my-bricks-site https://your-site.com/wp-json/mcp/mcp-adapter-default-server --header "Authorization: Basic YOUR_TOKEN"
-```
-
-For other agents, add this to their MCP settings:
-
-```json
-{
-  "mcpServers": {
-    "my-bricks-site": {
-      "type": "http",
-      "url": "https://your-site.com/wp-json/mcp/mcp-adapter-default-server",
-      "headers": { "Authorization": "Basic YOUR_TOKEN" }
-    }
-  }
-}
-```
-
-Put in your own site address and token.
-
-Don't use the `mcp-wordpress-remote` bridge. With current versions of Claude Code it connects but loads no tools.
-
-Start a new agent session after you add the server. Agents only load MCP servers when a session starts.
-
-### Step 5: Give the agent the skills files
-
-The skills files teach the agent how Mega Menu Pro works in Bricks.
-
-1. Copy the `mmpro-bricks-skills` folder into your project folder.
-2. Point your agent at `mmpro-bricks-skills/mega-menu-pro-bricks-skills.md`.
-
-| File | What it is |
-| --- | --- |
-| `mega-menu-pro-bricks-skills.md` | The file you point your agent at. Short on purpose. |
-| `mega-menu-pro-bricks-skills-build.md` | The full workflow. The agent reads it when it builds something new. |
-| `mega-menu-pro-bricks-skills-reference.md` | Lookup tables. The agent searches it when it needs one setting. |
-
-Keep the three files together in one folder.
+**Prefer a manual download?** [Download this repository](https://github.com/udoro/MMPro-Bricks-Docs/archive/refs/heads/main.zip), copy the `ai-connector/mmpro-bricks-skills` folder into your project, and point your agent at `mmpro-bricks-skills/mega-menu-pro-bricks-skills.md`.
 
 ***
 
@@ -132,7 +86,7 @@ The agent asks before it changes the structure of your header, and tells you how
 
 ## Your context file
 
-The agent keeps a file called `mmpro-bricks-user-context.md` next to the skills files. It notes your preferences and the layouts you've built, so the next session starts faster. The agent creates it on your first session and asks before it adds anything.
+The agent keeps a file called `mmpro-bricks-user-context.md` next to the skills files. It notes your preferences and the layouts you've built, so the next session starts faster. The agent creates it on your first session and asks before it adds anything. Updating the skills files keeps it.
 
 ***
 
@@ -148,10 +102,46 @@ The agent keeps a file called `mmpro-bricks-user-context.md` next to the skills 
 
 | Problem | What to do |
 | --- | --- |
-| The agent says it can't reach your site | Check step 4, then start a new session. |
-| The server shows as connected, but the agent has no Bricks tools | You're using the `mcp-wordpress-remote` bridge. Set the server up over HTTP, as in step 4. |
+| The agent says it can't reach your site | Check your connection with the video in step 1, then start a new session. |
+| The server shows as connected, but the agent has no Bricks tools | See [Connected, but no Bricks tools](#connected-but-no-bricks-tools) below. |
 | The agent says it can't save changes to your header | Install and activate MMPro AI Abilities (step 2), then start a new session. |
 | The agent says Mega Menu Pro's code isn't running | Go to **Bricks > Settings > Custom code** and check **Code execution** is on. |
 | The agent says an ability is turned off | Go to **Bricks > AI** and turn that ability on. |
 | The agent can't find your header | Import the Mega Menu Pro header template first. See [Installation](../getting-started.md). |
 | Changes show in the builder but not on your site | Clear your site's cache. |
+
+### Connected, but no Bricks tools
+
+If your agent's MCP settings mention `mcp-wordpress-remote`, connect over HTTP instead.
+
+**1. Make your sign-in token.** Run this in a terminal, with your WordPress username and your application password:
+
+```bash
+node -e "console.log(Buffer.from('your-username:xxxx xxxx xxxx xxxx xxxx xxxx').toString('base64'))"
+```
+
+Copy the line it prints. That's your token. Keep it private, like the password.
+
+**2. Swap the server.** Remove the old server from your agent's MCP settings. Then, in Claude Code, open a terminal in your project folder and run:
+
+```bash
+claude mcp add --transport http my-bricks-site https://your-site.com/wp-json/mcp/mcp-adapter-default-server --header "Authorization: Basic YOUR_TOKEN"
+```
+
+For other agents, add this to their MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "my-bricks-site": {
+      "type": "http",
+      "url": "https://your-site.com/wp-json/mcp/mcp-adapter-default-server",
+      "headers": { "Authorization": "Basic YOUR_TOKEN" }
+    }
+  }
+}
+```
+
+Put in your own site address and token.
+
+**3. Start a new agent session.** Agents only load MCP servers when a session starts.
