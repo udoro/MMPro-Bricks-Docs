@@ -1,0 +1,5 @@
+# Run folders and scratch files made while testing the skills.
+ai-connector/*-run/
+
+# Plugin tests: they read the private header templates.
+ai-connector/mmpro-ai-abilities/tests/
