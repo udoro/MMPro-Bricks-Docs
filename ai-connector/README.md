@@ -112,7 +112,7 @@ The agent keeps a file called `mmpro-bricks-user-context.md` next to the skills 
 
 ### Connected, but no Bricks tools
 
-If your agent's MCP settings mention `mcp-wordpress-remote`, connect over HTTP instead.
+If your agent's MCP settings mention `mcp-wordpress-remote`, connect over HTTP instead. Do all three steps, in order.
 
 **1. Make your sign-in token.** Copy this command:
 
