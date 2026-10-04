@@ -1,6 +1,6 @@
 $schema: https://api.gitbook.com/gitbook-docs.yaml
 site:
-  title: Bricks Mega Menu Pro + Header Builder
+  title: Bricks Mega Menu Pro
   structure:
     - type: section
       key: section-docs
