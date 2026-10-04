@@ -114,11 +114,16 @@ The agent keeps a file called `mmpro-bricks-user-context.md` next to the skills 
 
 If your agent's MCP settings mention `mcp-wordpress-remote`, connect over HTTP instead.
 
-**1. Make your sign-in token.** Run this in a terminal, with your WordPress username and your application password:
+**1. Make your sign-in token.** Copy this command:
 
 ```bash
-node -e "console.log(Buffer.from('your-username:xxxx xxxx xxxx xxxx xxxx xxxx').toString('base64'))"
+node -e "console.log(Buffer.from('your-username:your-application-password').toString('base64'))"
 ```
+
+Before you run it in a terminal, replace both placeholders. Keep the colon between them.
+
+* `your-username`: your WordPress username. It's the `WP_API_USERNAME` value in your current MCP settings.
+* `your-application-password`: your application password, spaces included. It looks like `abcd efgh ijkl mnop qrst uvwx`. It's the `WP_API_PASSWORD` value in your current MCP settings.
 
 Copy the line it prints. That's your token. Keep it private, like the password.
 
