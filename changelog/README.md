@@ -10,6 +10,10 @@ icon: arrows-retweet
 
 _Update from 1.4.5: replace the CSS in the **MEGA MENU Codes** code block. You don't need to import the template again._
 
+### New
+
+* **AI Connector.** An AI agent can now build and edit your Mega Menu Pro header for you. Describe what you want in plain English. It needs Bricks 2.4 or later and the free MMPro AI Abilities plugin. See the **AI Connector** tab to set it up.
+
 ### Improved
 
 * **Stripe style slides in from the right side on every move**, even when you skip a menu, like going from the first mega menu straight to the third.
