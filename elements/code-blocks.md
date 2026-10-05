@@ -36,3 +36,5 @@ If you have more than one header, you can move the shared code out of the header
 * **SIDEBAR Codes:** only keep it if you use sidebar mode.
 
 If no header uses offcanvas or sidebar mode, you can move every block out and leave your header templates clean.
+
+The [MMPro Updater](../updating.md) reads your settings from the code blocks in the header. Code you move to a code manager, you update by hand.

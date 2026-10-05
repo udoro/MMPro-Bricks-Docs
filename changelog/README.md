@@ -4,11 +4,11 @@ icon: arrows-retweet
 
 # Changelog
 
-> To update Mega Menu Pro, see [Updating](https://design-with-cracka.gitbook.io/bricksmegamenupro/updating). Each version also comes as a template file. Import it in **Bricks > Templates**. Don't copy and paste it.
+> To update Mega Menu Pro, use the MMPro Updater. See [Updating](https://design-with-cracka.gitbook.io/bricksmegamenupro/updating).
 
 ## Version 1.4.6 - October 5, 2026
 
-_Update from 1.4.5: replace the CSS in the **MEGA MENU Codes** code block. You don't need to import the template again._
+_Update from 1.4.5: use the [MMPro Updater](https://design-with-cracka.gitbook.io/bricksmegamenupro/updating), or just replace the CSS in the **MEGA MENU Codes** code block._
 
 ### New
 

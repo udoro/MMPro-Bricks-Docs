@@ -4,57 +4,97 @@ icon: cloud-arrow-up
 
 # Updating
 
-Most updates are small CSS fixes. The update tells you which code block the CSS goes in. Paste it at the bottom of that block's CSS tab, unless the update says otherwise.
+The **MMPro Updater** moves your header to a new version of Mega Menu Pro and keeps your settings. You don't need to redo your styles or options after an update.
 
-Bigger updates replace a whole code block. The update tells you which one. Usually it's **MEGA MENU Codes**.
+**Open the updater:** [bricks.designwithcracka.com/mmpro-updater](https://bricks.designwithcracka.com/mmpro-updater/)
 
-Don't replace **MENU Styles / Options** unless the update tells you to. It holds your settings, and replacing it resets them.
+**Watch it in action:** [Quicker updates for Bricks Mega Menu Pro!](https://youtu.be/XaGLRo6DYBA)
+
+{% embed url="https://youtu.be/XaGLRo6DYBA" %}
 
 ***
 
-## Replace a code block
+## What the updater keeps
+
+From your current header, the updater keeps:
+
+* Your CSS variables and menu options from the **MENU Styles / Options** code block
+* Your attributes
+* Your menu items and mega menu content
+* Your logo, on desktop and mobile
+* Your own classes, such as the ones from extra starter templates
+
+It replaces the **MEGA MENU Codes** code block with the new version. If your header doesn't have the **SIDEBAR Codes** code block, it leaves that block out.
+
+Elements you added to the header yourself, such as an extra header row, aren't carried over. You move them across by hand in step 5.
+
+***
+
+## Step 1: Copy your current header
 
 1. Open your header template in the builder.
-2. Select the code block the update names, for example **MEGA MENU Codes**.
-3. Click into its CSS tab, select everything (Ctrl+A, or Cmd+A on a Mac), and paste the new CSS over it.
-4. If the update also has JavaScript, do the same in the JS tab.
-5. Save.
-6. If Bricks asks you to sign the code, sign it. See [Installation](getting-started.md#turn-on-code-execution).
-
-If you've moved the block into a code manager, replace the code there instead. See [Code Blocks](elements/code-blocks.md).
+2. In the Structure panel, click **Header Pro**.
+3. Hold **Shift** and click the last code block. This selects the header and all its code blocks.
+4. Press **Ctrl+C** (**Cmd+C** on a Mac).
+5. In the updater, under **Your Current Version**, paste into the **Old JSON** box.
 
 ***
 
-## Several headers on one site
+## Step 2: Load the new version
 
-If your site has more than one header, move the shared code out of the headers. Then you update it in one place. See [Code Blocks](elements/code-blocks.md#several-headers-on-one-site).
+1. Download the new template file from your Gumroad dashboard. Pick the same kind you use now: **Full** or **Lite**.
+2. In the updater, under **Updated Release**, drop the file on **New JSON**, or click it to choose the file.
+3. Click **Review Changes**.
+
+If the updater says your files may be in the wrong order, check that your current header is in **Old JSON** and the download is in **New JSON**.
 
 ***
 
-## Older versions
+## Step 3: Review the changes
 
-**Bricks 2.0.2** renamed its sticky header class from `.sticky` to `.brx-sticky`. If you use a sticky header with Mega Menu Pro **1.4.2 or below**, add this CSS to the bottom of the **MEGA MENU Codes** CSS tab:
+The updater lists every CSS value that's different in the new version. For each one, choose:
 
-```css
-body:has(.brx-has-megamenu.open) .brx-sticky .dwc-nest-header::after {
-  background-color: var(--adaptive-height-bg) !important;
-}
-html:not(.dwc-mobile) .bricks-is-frontend #brx-header:has([data-overlay-header="true"]):not(.brx-sticky) {
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline: 0;
-}
-.dwc-mobile .bricks-is-frontend #brx-header:has([data-overlay-header-mobile="true"]):not(.brx-sticky) {
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline: 0;
-}
-```
+* **Keep yours** to keep your value. It's selected by default.
+* **Use new** to take the value from the new version.
 
-**Updating from 1.2 to 1.4 or later:** if the menu slides off screen when you resize from desktop to mobile, your **nav wrapper** element is missing newer CSS. To copy it over:
+Some changes are whole rules:
 
-1. Import the new header template. Don't set conditions on it.
-2. Open it in the builder and select its **nav wrapper** element.
-3. Open **Style > CSS** and copy everything in **Custom CSS**.
-4. Open your own header template, select its **nav wrapper**, and paste into the same field.
-5. Save. You can then delete the template you imported.
+* A rule that's new in the update is included. Untick it to leave it out.
+* For a rule the update removed, tick it to keep your copy, or untick it to accept the removal.
+
+Also check these two warnings, if they show:
+
+* **Custom elements detected:** elements you added to the header yourself. They won't be in the result. Note them down, because you'll move them across in step 5. The updater shows each one's element ID.
+* **Global classes only in your file:** classes you have that the new version doesn't, usually your own. They're kept. Untick any you don't want.
+
+Everything under **Auto-applied actions** happens on its own. You don't need to do anything there.
+
+When you're done, click **Apply & Generate**.
+
+***
+
+## Step 4: Copy the result
+
+The **Update Complete** screen lists what the updater did. Anything marked **failed** wasn't carried over. For example, if the **MENU Styles / Options** code block wasn't in what you copied, your variables and options aren't in the result. Click **Start Over** and copy your header again, with all its code blocks.
+
+When everything looks right, click **Copy JSON**.
+
+***
+
+## Step 5: Paste it into your header
+
+Do all of these, in order:
+
+1. In the builder, click an empty spot on the canvas below your header, so nothing is selected.
+2. Press **Ctrl+V** (**Cmd+V** on a Mac). The new header and its code blocks appear below your old ones.
+3. Move the elements you noted in step 3 from your old header into the new one.
+4. Delete your old header and your old code blocks.
+5. Save, then check your site.
+
+***
+
+## Notes
+
+* The updater reads your settings from the code blocks in your header. If you moved a code block into a code manager, update that code by hand: copy it from the new version.
+* If something goes wrong, restore your header template from its revisions in Bricks.
+* After a big version jump, you may need a few small fixes by hand.
