@@ -4,7 +4,7 @@ icon: arrows-retweet
 
 # Changelog
 
-> To update Mega Menu Pro, see **Updating** in the Docs tab. Each version also comes as a template file. Import it in **Bricks > Templates**. Don't copy and paste it.
+> To update Mega Menu Pro, see [Updating](https://design-with-cracka.gitbook.io/bricksmegamenupro/updating). Each version also comes as a template file. Import it in **Bricks > Templates**. Don't copy and paste it.
 
 ## Version 1.4.6 - October 5, 2026
 
@@ -12,7 +12,8 @@ _Update from 1.4.5: replace the CSS in the **MEGA MENU Codes** code block. You d
 
 ### New
 
-* **AI Connector.** An AI agent can now build and edit your Mega Menu Pro header for you. Describe what you want in plain English. It needs Bricks 2.4 or later and the free MMPro AI Abilities plugin. See the **AI Connector** tab to set it up.
+* **AI Connector.** An AI agent can now build and edit your Mega Menu Pro header for you. Describe what you want in plain English. It needs Bricks 2.4 or later and the free MMPro AI Abilities plugin. To set it up, see the [AI Connector](https://design-with-cracka.gitbook.io/bricksmegamenupro/ai-connector) page.
+* **New documentation site.** All the docs are now in one place, on GitBook: [Bricks Mega Menu Pro docs](https://design-with-cracka.gitbook.io/bricksmegamenupro).
 
 ### Improved
 
