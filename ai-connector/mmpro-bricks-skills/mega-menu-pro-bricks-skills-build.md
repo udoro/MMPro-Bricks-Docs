@@ -71,6 +71,9 @@ Before any write that changes structure or look, ask the user in **one** questio
 revision, and tell the user that is the restore point. Do not remove anything until the user
 confirms.
 
+To undo, tell the user to restore from the builder's Revisions panel and save. Never call
+`bricks/restore-revision` on an MMPro header: it strips backslashes from the code blocks.
+
 ### 4. Order of tools
 
 Use the first tier that can do the job. Name the tier in chat before each write.
