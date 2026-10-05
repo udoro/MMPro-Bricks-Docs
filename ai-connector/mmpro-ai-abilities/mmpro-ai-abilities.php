@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       MMPro AI Abilities
  * Description:       Lets AI agents read and edit Mega Menu Pro headers in Bricks through the WordPress Abilities API and MCP.
- * Version:           0.3.0
+ * Version:           0.3.1
  * Update URI:        https://github.com/udoro/MMPro-Bricks-Docs
  * Requires at least: 6.9
  * Requires PHP:      7.4
@@ -23,7 +23,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class MMPro_AI_Abilities {
 
-	const VERSION          = '0.3.0';
+	const VERSION          = '0.3.1';
 
 	/** Updates: the "Update URI" header sends WordPress's update check for this plugin here. */
 	const SLUG             = 'mmpro-ai-abilities';
@@ -55,6 +55,12 @@ final class MMPro_AI_Abilities {
 		add_action( 'wp_abilities_api_init', [ __CLASS__, 'register_abilities' ] );
 		add_filter( 'update_plugins_github.com', [ __CLASS__, 'check_update' ], 10, 3 );
 		add_filter( 'plugins_api', [ __CLASS__, 'plugin_info' ], 10, 3 );
+		// "Check again" in Dashboard > Updates clears WordPress's update cache; clear ours with it.
+		add_action( 'delete_site_transient_update_plugins', [ __CLASS__, 'forget_update' ] );
+	}
+
+	public static function forget_update() {
+		delete_transient( self::UPDATE_TRANSIENT );
 	}
 
 	/* ---------------------------------------------------------------------------------------- */
@@ -1280,6 +1286,16 @@ final class MMPro_AI_Abilities {
 		add_filter( 'wp_save_post_revision_check_for_changes', '__return_false' );
 		$revision_id = wp_save_post_revision( $post_id );
 		remove_filter( 'wp_save_post_revision_check_for_changes', '__return_false' );
+
+		// WordPress copies only the title and content into a revision. Copy the header as it is before
+		// this write, so the revision can undo it from Bricks. update_post_meta() would write to the
+		// template itself, so update_metadata() targets the revision.
+		if ( is_int( $revision_id ) && $revision_id > 0 ) {
+			$before = get_post_meta( $post_id, BRICKS_DB_PAGE_HEADER, true );
+			if ( is_array( $before ) ) {
+				update_metadata( 'post', $revision_id, BRICKS_DB_PAGE_HEADER, wp_slash( $before ) );
+			}
+		}
 
 		// update_post_meta() unslashes; without wp_slash() backslashes in the code blocks are lost.
 		$checked = \Bricks\Helpers::security_check_elements_before_save( wp_slash( $elements ), $post_id, 'header' );

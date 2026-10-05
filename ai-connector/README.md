@@ -27,7 +27,7 @@ Come back here once your agent is connected to your site.
 
 ### Step 2: Install MMPro AI Abilities
 
-1. [Download MMPro AI Abilities](https://github.com/udoro/MMPro-Bricks-Docs/raw/main/ai-connector/mmpro-ai-abilities/releases/mmpro-ai-abilities-v0.3.0.zip).
+1. [Download MMPro AI Abilities](https://github.com/udoro/MMPro-Bricks-Docs/raw/main/ai-connector/mmpro-ai-abilities/releases/mmpro-ai-abilities-v0.3.1.zip).
 2. In WordPress, go to **Plugins > Add New Plugin > Upload Plugin**.
 3. Choose the zip file you downloaded and click **Install Now**.
 4. Click **Activate**.

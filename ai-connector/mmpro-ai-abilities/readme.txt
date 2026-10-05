@@ -1,7 +1,7 @@
 === MMPro AI Abilities ===
 Requires at least: 6.9
 Requires PHP: 7.4
-Stable tag: 0.3.0
+Stable tag: 0.3.1
 License: GPL-2.0-or-later
 
 Lets AI agents read and edit Mega Menu Pro headers in Bricks.
@@ -36,6 +36,10 @@ You also need Bricks 2.4 or later with abilities turned on (Bricks > AI), and th
 An agent can only do what its WordPress user can do. Reading needs the right to edit the template. Writing also needs Bricks builder access. Changing CSS variables or JS options needs Bricks' code execution permission. Adding or removing elements needs permission to change the element count.
 
 == Changelog ==
+
+= 0.3.1 =
+* Fixed: undoing a change from the header template's revisions in Bricks now works.
+* Check again in Dashboard > Updates now finds new versions straight away.
 
 = 0.3.0 =
 * New versions now show in Dashboard > Updates, like any other plugin.
