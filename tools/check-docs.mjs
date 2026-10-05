@@ -45,7 +45,7 @@ function newest(...patterns) {
 const templates = {
   full: newest(['RELEASE', /^Bricks-Mega-Menu-Pro-Template v[\d.]+\.json$/], ['', /^template-mega-menu-pro-header-template-v\d+-\d{4}-\d{2}-\d{2}\.json$/]),
   lite: newest(['RELEASE', /^Bricks-Mega-Menu-Pro-Template v[\d.]+--Lite\.json$/], ['', /^template-mega-menu-pro-header-template-v\d+-lite-\d{4}-\d{2}-\d{2}\.json$/]),
-  tabbed: newest(['RELEASE', /^template-tabbed-navigation-v\d+-\d{4}-\d{2}-\d{2}\.json$/], ['', /^template-tabbed-navigation-v\d+-\d{4}-\d{2}-\d{2}\.json$/]),
+  tabbed: newest(['RELEASE', /^Tabbed Navigation v[\d.]+\.json$/], ['', /^template-tabbed-navigation-v\d+-\d{4}-\d{2}-\d{2}\.json$/]),
 };
 console.log(`  templates: ${Object.values(templates).map((p) => p.slice(SRC.length + 1)).join(', ')}`);
 const elements = Object.fromEntries(Object.entries(templates).map(([k, f]) => {
