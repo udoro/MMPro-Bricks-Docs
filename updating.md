@@ -33,7 +33,7 @@ If your site has more than one header, move the shared code out of the headers. 
 
 ## Older versions
 
-**Bricks 2.0.2** renamed its sticky header class from `.sticky` to `.brx-sticky`. If you use a sticky header with Mega Menu Pro **1.4.1 or below**, add this CSS to the bottom of the **MEGA MENU Codes** CSS tab:
+**Bricks 2.0.2** renamed its sticky header class from `.sticky` to `.brx-sticky`. If you use a sticky header with Mega Menu Pro **1.4.2 or below**, add this CSS to the bottom of the **MEGA MENU Codes** CSS tab:
 
 ```css
 body:has(.brx-has-megamenu.open) .brx-sticky .dwc-nest-header::after {

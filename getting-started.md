@@ -29,7 +29,7 @@ Mega Menu Pro runs from code blocks inside the template. Bricks only runs them w
 ## What's inside the template
 
 ```
-Header Pro | v1.4.5                (Header Pro element: header attributes)
+Header Pro | v1.4.6                (Header Pro element: header attributes)
 └── Container
     ├── Logowrap (link)            (your logo)
     └── Menu wrap

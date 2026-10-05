@@ -31,16 +31,23 @@ const pass = (msg) => console.log(`  ok    ${msg}`);
 
 /* sources */
 
-function newest(re) {
-  const hits = readdirSync(SRC).filter((f) => re.test(f)).sort();
-  if (!hits.length) { console.error(`no template matching ${re} in ${SRC}`); process.exit(2); }
-  return join(SRC, hits[hits.length - 1]);
+// The newest matching file: release templates in RELEASE first, then older exports at the top level.
+function newest(...patterns) {
+  for (const [dir, re] of patterns) {
+    const full = join(SRC, dir);
+    if (!existsSync(full)) continue;
+    const hits = readdirSync(full).filter((f) => re.test(f)).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    if (hits.length) return join(full, hits[hits.length - 1]);
+  }
+  console.error(`no template matching ${patterns.map(([d, re]) => `${d}/${re}`).join(' or ')} in ${SRC}`);
+  process.exit(2);
 }
 const templates = {
-  full: newest(/^template-mega-menu-pro-header-template-v\d+-\d{4}-\d{2}-\d{2}\.json$/),
-  lite: newest(/^template-mega-menu-pro-header-template-v\d+-lite-\d{4}-\d{2}-\d{2}\.json$/),
-  tabbed: newest(/^template-tabbed-navigation-v\d+-\d{4}-\d{2}-\d{2}\.json$/),
+  full: newest(['RELEASE', /^Bricks-Mega-Menu-Pro-Template v[\d.]+\.json$/], ['', /^template-mega-menu-pro-header-template-v\d+-\d{4}-\d{2}-\d{2}\.json$/]),
+  lite: newest(['RELEASE', /^Bricks-Mega-Menu-Pro-Template v[\d.]+--Lite\.json$/], ['', /^template-mega-menu-pro-header-template-v\d+-lite-\d{4}-\d{2}-\d{2}\.json$/]),
+  tabbed: newest(['RELEASE', /^template-tabbed-navigation-v\d+-\d{4}-\d{2}-\d{2}\.json$/], ['', /^template-tabbed-navigation-v\d+-\d{4}-\d{2}-\d{2}\.json$/]),
 };
+console.log(`  templates: ${Object.values(templates).map((p) => p.slice(SRC.length + 1)).join(', ')}`);
 const elements = Object.fromEntries(Object.entries(templates).map(([k, f]) => {
   const j = JSON.parse(readFileSync(f, 'utf8'));
   return [k, j.header || j.content || []];

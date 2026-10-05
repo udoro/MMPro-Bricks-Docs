@@ -6,7 +6,7 @@ icon: pen-to-square
 
 **Mega Menu Pro + Header Builder for Bricks** is a header and navigation template for Bricks Builder. It gives you a responsive menu, mega menus, an overlay header, offcanvas and sidebar navigation, a centered logo, and a mobile menu with slide or expand submenus.
 
-This documentation covers version **1.4.5**.
+This documentation covers version **1.4.6**.
 
 ***
 

@@ -4,7 +4,7 @@ icon: window-maximize
 
 # Header Pro
 
-**Header Pro** is the outer element of the header. In the Structure panel it's labelled "Header Pro | v1.4.5". It holds the header settings, mainly the overlay header.
+**Header Pro** is the outer element of the header. In the Structure panel it's labelled "Header Pro | v1.4.6" ("Header Pro | v1.4.6 Lite" in Lite). It holds the header settings, mainly the overlay header.
 
 To change a setting, select **Header Pro**, open **Style > Attributes**, and change the value. The attributes are already there. You don't need to add them. See [Change an attribute](../README.md#change-an-attribute).
 
