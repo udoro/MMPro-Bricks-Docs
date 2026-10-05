@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       MMPro AI Abilities
  * Description:       Lets AI agents read and edit Mega Menu Pro headers in Bricks through the WordPress Abilities API and MCP.
- * Version:           0.3.2
+ * Version:           0.3.3
  * Update URI:        https://github.com/udoro/MMPro-Bricks-Docs
  * Requires at least: 6.9
  * Requires PHP:      7.4
@@ -23,7 +23,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class MMPro_AI_Abilities {
 
-	const VERSION          = '0.3.2';
+	const VERSION          = '0.3.3';
 
 	/** Updates: the "Update URI" header sends WordPress's update check for this plugin here. */
 	const SLUG             = 'mmpro-ai-abilities';
@@ -55,8 +55,16 @@ final class MMPro_AI_Abilities {
 		add_action( 'wp_abilities_api_init', [ __CLASS__, 'register_abilities' ] );
 		add_filter( 'update_plugins_github.com', [ __CLASS__, 'check_update' ], 10, 3 );
 		add_filter( 'plugins_api', [ __CLASS__, 'plugin_info' ], 10, 3 );
-		// "Check again" in Dashboard > Updates clears WordPress's update cache; clear ours with it.
+		// Clear the update info whenever WordPress clears its own, and on "Check again" in
+		// Dashboard > Updates (before WordPress runs its plugin check on that screen).
 		add_action( 'delete_site_transient_update_plugins', [ __CLASS__, 'forget_update' ] );
+		add_action( 'load-update-core.php', [ __CLASS__, 'forget_on_check_again' ], 1 );
+	}
+
+	public static function forget_on_check_again() {
+		if ( ! empty( $_GET['force-check'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only flag, as in core.
+			self::forget_update();
+		}
 	}
 
 	public static function forget_update() {
@@ -123,8 +131,9 @@ final class MMPro_AI_Abilities {
 		$valid = is_array( $data )
 			&& ! empty( $data['version'] ) && is_string( $data['version'] ) && preg_match( '/^\d+(\.\d+){1,3}$/', $data['version'] )
 			&& ! empty( $data['package'] ) && is_string( $data['package'] ) && 0 === strpos( $data['package'], self::PACKAGE_PREFIX );
-		// A failed check is cached for an hour, so a GitHub outage does not slow every admin page.
-		set_transient( self::UPDATE_TRANSIENT, $valid ? $data : [], $valid ? 6 * HOUR_IN_SECONDS : HOUR_IN_SECONDS );
+		// WordPress already limits how often it checks for updates. This short cache only lets the
+		// update check and the "View details" window share one fetch; a failed fetch waits a little longer.
+		set_transient( self::UPDATE_TRANSIENT, $valid ? $data : [], $valid ? 5 * MINUTE_IN_SECONDS : 15 * MINUTE_IN_SECONDS );
 		return $valid ? $data : null;
 	}
 
