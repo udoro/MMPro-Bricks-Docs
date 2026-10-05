@@ -1,7 +1,7 @@
 === MMPro AI Abilities ===
 Requires at least: 6.9
 Requires PHP: 7.4
-Stable tag: 0.3.1
+Stable tag: 0.3.2
 License: GPL-2.0-or-later
 
 Lets AI agents read and edit Mega Menu Pro headers in Bricks.
@@ -21,7 +21,7 @@ Adds ten abilities to the WordPress Abilities API. The WordPress MCP Adapter mak
 * mmpro/set-element-settings: change the settings of an element in the menu
 * mmpro/set-breakpoint: move the desktop/mobile breakpoint
 
-Every write saves a revision first, so you can undo it from Bricks' revisions. Writes only work on a header template with a "Header Pro" element, and only on the menu inside Nav items. The header structure can't be changed. The code blocks marked "don't edit" only change through the documented breakpoint change.
+Every write saves a revision, so you can undo it from the header template's Revisions panel in Bricks. Writes only work on a header template with a "Header Pro" element, and only on the menu inside Nav items. The header structure can't be changed. The code blocks marked "don't edit" only change through the documented breakpoint change.
 
 == Installation ==
 
@@ -36,6 +36,9 @@ You also need Bricks 2.4 or later with abilities turned on (Bricks > AI), and th
 An agent can only do what its WordPress user can do. Reading needs the right to edit the template. Writing also needs Bricks builder access. Changing CSS variables or JS options needs Bricks' code execution permission. Adding or removing elements needs permission to change the element count.
 
 == Changelog ==
+
+= 0.3.2 =
+* The newest revision now matches your header, as in Bricks. To undo an agent's change, apply the revision just below Current version.
 
 = 0.3.1 =
 * Fixed: undoing a change from the header template's revisions in Bricks now works.

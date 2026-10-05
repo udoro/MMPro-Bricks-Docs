@@ -27,7 +27,7 @@ Come back here once your agent is connected to your site.
 
 ### Step 2: Install MMPro AI Abilities
 
-1. [Download MMPro AI Abilities](https://github.com/udoro/MMPro-Bricks-Docs/raw/main/ai-connector/mmpro-ai-abilities/releases/mmpro-ai-abilities-v0.3.1.zip).
+1. [Download MMPro AI Abilities](https://github.com/udoro/MMPro-Bricks-Docs/raw/main/ai-connector/mmpro-ai-abilities/releases/mmpro-ai-abilities-v0.3.2.zip).
 2. In WordPress, go to **Plugins > Add New Plugin > Upload Plugin**.
 3. Choose the zip file you downloaded and click **Install Now**.
 4. Click **Activate**.
@@ -94,7 +94,7 @@ The agent keeps a file called `mmpro-bricks-user-context.md` next to the skills 
 
 * **Start each session by telling your agent to read `mmpro-bricks-skills/mega-menu-pro-bricks-skills.md`.** Agents don't remember earlier sessions.
 * **Check the result on your site.** The agent checks your published pages, but it can't see inside your Bricks builder.
-* **Undo a change** from the header template's revisions in Bricks. Every change the agent saves makes a new revision first.
+* **Undo the agent's last change:** in the builder, open the header template's **Revisions** panel, click the revision just below **Current version**, click **Apply**, then save.
 
 ***
 

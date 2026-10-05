@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       MMPro AI Abilities
  * Description:       Lets AI agents read and edit Mega Menu Pro headers in Bricks through the WordPress Abilities API and MCP.
- * Version:           0.3.1
+ * Version:           0.3.2
  * Update URI:        https://github.com/udoro/MMPro-Bricks-Docs
  * Requires at least: 6.9
  * Requires PHP:      7.4
@@ -23,7 +23,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class MMPro_AI_Abilities {
 
-	const VERSION          = '0.3.1';
+	const VERSION          = '0.3.2';
 
 	/** Updates: the "Update URI" header sends WordPress's update check for this plugin here. */
 	const SLUG             = 'mmpro-ai-abilities';
@@ -1274,7 +1274,7 @@ final class MMPro_AI_Abilities {
 		return [ $post_id, $header['elements'], self::index( $header['elements'] ), $header['map'] ];
 	}
 
-	/** Same order as the Bricks builder save: revision, security check, slashed element list. */
+	/** Saves like the Bricks builder: security check, slashed element list, revisions that hold the header. */
 	private static function finish( $post_id, array $elements, $input, array $result ) {
 		$elements = array_values( $elements );
 
@@ -1283,30 +1283,27 @@ final class MMPro_AI_Abilities {
 			return $result;
 		}
 
-		add_filter( 'wp_save_post_revision_check_for_changes', '__return_false' );
-		$revision_id = wp_save_post_revision( $post_id );
-		remove_filter( 'wp_save_post_revision_check_for_changes', '__return_false' );
-
-		// WordPress copies only the title and content into a revision. Copy the header as it is before
-		// this write, so the revision can undo it from Bricks. update_post_meta() would write to the
-		// template itself, so update_metadata() targets the revision.
-		if ( is_int( $revision_id ) && $revision_id > 0 ) {
-			$before = get_post_meta( $post_id, BRICKS_DB_PAGE_HEADER, true );
-			if ( is_array( $before ) ) {
-				update_metadata( 'post', $revision_id, BRICKS_DB_PAGE_HEADER, wp_slash( $before ) );
-			}
-		}
+		// Revisions follow Bricks: the newest revision is the current header ("Current version" in the
+		// builder), so the one below it undoes this write. Keep the state before the write as a
+		// revision, unless the newest revision already holds it.
+		$before = get_post_meta( $post_id, BRICKS_DB_PAGE_HEADER, true );
+		$before = is_array( $before ) ? array_values( $before ) : [];
+		list( $latest_id, $latest_header ) = self::latest_revision( $post_id );
+		$undo_id = ( null !== $latest_header && self::digest( $latest_header ) === self::digest( $before ) )
+			? $latest_id
+			: self::snapshot( $post_id, $before );
 
 		// update_post_meta() unslashes; without wp_slash() backslashes in the code blocks are lost.
 		$checked = \Bricks\Helpers::security_check_elements_before_save( wp_slash( $elements ), $post_id, 'header' );
 		update_post_meta( $post_id, BRICKS_DB_PAGE_HEADER, $checked );
 		wp_cache_delete( $post_id, 'post_meta' );
 
-		$stored               = get_post_meta( $post_id, BRICKS_DB_PAGE_HEADER, true );
-		$stored               = is_array( $stored ) ? array_values( $stored ) : [];
-		$result['dryRun']     = false;
-		$result['revisionId'] = is_int( $revision_id ) ? $revision_id : 0;
-		$result['digest']     = self::digest( $stored );
+		$stored                      = get_post_meta( $post_id, BRICKS_DB_PAGE_HEADER, true );
+		$stored                      = is_array( $stored ) ? array_values( $stored ) : [];
+		$result['dryRun']            = false;
+		$result['revisionId']        = $undo_id;
+		$result['currentRevisionId'] = self::snapshot( $post_id, $stored );
+		$result['digest']            = self::digest( $stored );
 		$result['persisted']  = self::digest( $stored ) === self::digest( $elements );
 		if ( ! $result['persisted'] ) {
 			$result['warning'] = 'The stored header differs from what was sent. Bricks may have removed content this user is not allowed to save.';
@@ -1316,6 +1313,33 @@ final class MMPro_AI_Abilities {
 
 	private static function digest( array $elements ) {
 		return md5( (string) wp_json_encode( array_values( $elements ) ) );
+	}
+
+	/**
+	 * Saves a revision that holds $elements as its header. WordPress copies only the title and
+	 * content into a revision, so the header is added with update_metadata(): update_post_meta()
+	 * would write to the template itself.
+	 */
+	private static function snapshot( $post_id, array $elements ) {
+		add_filter( 'wp_save_post_revision_check_for_changes', '__return_false' );
+		$revision_id = wp_save_post_revision( $post_id );
+		remove_filter( 'wp_save_post_revision_check_for_changes', '__return_false' );
+		if ( ! is_int( $revision_id ) || $revision_id <= 0 ) {
+			return 0;
+		}
+		update_metadata( 'post', $revision_id, BRICKS_DB_PAGE_HEADER, wp_slash( $elements ) );
+		return $revision_id;
+	}
+
+	/** The newest revision's ID and header (null when it holds none). */
+	private static function latest_revision( $post_id ) {
+		$revisions = wp_get_post_revisions( $post_id, [ 'numberposts' => 1 ] );
+		if ( ! $revisions ) {
+			return [ 0, null ];
+		}
+		$revision = reset( $revisions );
+		$header   = get_metadata( 'post', $revision->ID, BRICKS_DB_PAGE_HEADER, true );
+		return [ (int) $revision->ID, is_array( $header ) ? array_values( $header ) : null ];
 	}
 
 	/* ---------------------------------------------------------------------------------------- */
