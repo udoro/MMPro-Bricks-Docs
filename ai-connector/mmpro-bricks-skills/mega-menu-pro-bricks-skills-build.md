@@ -257,6 +257,8 @@ with "Render without wrapper" on.
   `--menu-item-inline-padding`, never with `gap`, margins or `justify-content: space-between` (or
   `space-around`, `space-evenly`): the pointer crossing a gap closes the dropdown and breaks the
   morph.
+* A fixed `--menu-item-inline-padding` can overflow the row between the breakpoint and the container
+  width. Scale it with `clamp()` so the row fits at every desktop width.
 * With Adaptive height, keep a shadow on the panel (`--adaptive-height-shadow`, MMPro's default if
   the design gives none), even when the design asks for no shadows: without it the panel doesn't
   stand out on a white page.
