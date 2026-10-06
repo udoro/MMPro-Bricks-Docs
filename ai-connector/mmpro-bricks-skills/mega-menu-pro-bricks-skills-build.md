@@ -45,7 +45,7 @@ apply one, tell the user.
 (page snapshots, scripts). Delete it at the end, except any backup you were told to keep. Use `node`
 for scripting and parsing. Never `python` or `jq`.
 
-**Timestamp.** Run `date +%s` before your first Bricks call.
+**Timestamp.** Run `date +%s` before you start work and save the value in your working directory.
 
 ### 2. Connect and find the header
 
@@ -66,6 +66,8 @@ Before any write that changes structure or look, ask the user in **one** questio
 * **Unclear phrases.** List every phrase in the brief with more than one technical reading (a vague
   width, an unstated open/closed state, two requirements that may be one setting) and resolve them in
   the same batch.
+* **Screenshots.** If the user gives design screenshots, ask the browser zoom and window width each
+  was taken at.
 
 **Before option (b):** call `bricks/list-revisions` for the header template, note the latest
 revision, and tell the user that is the restore point. Do not remove anything until the user
@@ -178,6 +180,17 @@ Bricks sites often set it to 10px. Prefer px, or MMPro variables such as
 Include the layout below the breakpoint in the same pass. If `get-header` returns
 `cssLoading: "file"`, call `bricks/regenerate-css-files` after adding styled elements.
 
+### Match a design from screenshots
+
+1. Test at viewport width = screenshot width ÷ zoom, with `dpr` = zoom, so your screenshots have the
+   same scale. This holds when the screenshot shows the full window width.
+2. Screenshots are often cropped at the top. Align on the nav text row before comparing.
+3. Compare text-line positions measured from pixels in both images (`lines` in `mmpro-test.mjs`).
+   Never judge spacing by eye.
+4. If the design's font is not on the site, use a free look-alike. Match its size by measured text
+   width, not the nominal size.
+5. Compare every state the screenshots show, at each size they show.
+
 ### Change the breakpoint
 
 `mmpro/set-breakpoint`: `postId`, `desktopMinWidth` (the first desktop width; mobile is one pixel
@@ -222,8 +235,31 @@ with "Render without wrapper" on.
 * Sidebar mode needs the `postid-23338` rules in MENU Styles / Options changed to the template's ID.
   The plugin cannot edit them: give the user the builder steps (reference section 7).
 
-### Stripe style
+### Your own CSS
 
+* Global-class CSS loads in the page head, before MMPro's code blocks, so MMPro wins ties. Start every
+  selector with `#brx-header` (after a leading `html…` part, if any). Never put it in front of an
+  @-rule (`@font-face`, `@keyframes`, `@media`).
+* A malformed rule can make Bricks leave that class's CSS off the page while the save succeeds. After
+  every save, fetch the page and find one unique string from each class you saved.
+* Bricks removes comments and splits `a, b {}` into one rule per selector. Never compare the stored
+  CSS with what you sent.
+* Desktop-only rules start with `html:not(.dwc-mobile)`, mobile-only rules with `html.dwc-mobile`. A
+  rule with neither applies to both.
+* Keep the CSS for every class you create in one local file in your working directory, and save each
+  class from it. After a fix, save only the classes that changed.
+* A draft injected with `css()` loads where class CSS does, but only the published page proves it.
+  Confirm there after saving.
+
+### Stripe style and Adaptive height
+
+* With Stripe style or Adaptive height, top-level menu items must touch. Space them with
+  `--menu-item-inline-padding`, never with `gap`, margins or `justify-content: space-between` (or
+  `space-around`, `space-evenly`): the pointer crossing a gap closes the dropdown and breaks the
+  morph.
+* With Adaptive height, keep a shadow on the panel (`--adaptive-height-shadow`, MMPro's default if
+  the design gives none), even when the design asks for no shadows: without it the panel doesn't
+  stand out on a white page.
 * `stripeStyle` (JS option) morphs one shared panel, the header's `::after`, to each mega menu's
   size and position. The caret is the header's `::before`.
 * The direction slide moves the children of Content Inner by 50px, and only between neighbouring
@@ -249,6 +285,13 @@ with "Render without wrapper" on.
   the Nav's.
 * A new Toggle outside the Nav needs its `toggleSelector` setting set to `.brxe-nav-nested`. The
   plugin only adds elements inside Nav items, so this is a builder step for the user.
+* With `data-submenu-reveal` `slide` (the default), the back button is the open item's own toggle
+  `button`: `position: fixed` at the top of `.dwc-nav-wrapper`, its text (the item name, or
+  `data-back-text`) in `::after`, the chevron in its `svg`.
+* To stop the menu's slide-in, set `.dwc-nav-wrapper` to `transform: translateX(0) !important`, never
+  `none`. The wrapper's transform keeps the back button inside the menu.
+* Logged-in users have the WordPress admin bar at the top of the screen. Offset anything you fix to
+  the top with `var(--wp-admin--admin-bar--height, 0px)`, as MMPro does.
 
 ### Overlay header and sticky
 
@@ -279,21 +322,30 @@ cover. Grep for what you changed: an attribute value, a class, a link.
 **Before you report that the header is missing from a page**, confirm the fetch was not cached
 (entry file, "When the page disagrees").
 
-**2. Use your own headless browser** for position, size, computed style and behavior.
+**2. Use your own headless browser** for position, size, computed style and behavior:
+`mmpro-test.mjs` in this folder. It needs Node 22+ and Chrome, and launches its own Chrome with a
+temporary profile. The import path is relative to your script.
 
-* Launch a fresh Chrome on a spare port with its own temporary profile:
-  `--headless=new --remote-debugging-port=<port> --user-data-dir=<temp> --no-first-run --disable-gpu
-  --hide-scrollbars about:blank`. Drive it over CDP from `node` (native `WebSocket`, no install).
-  Kill it and delete the profile when done.
+```js
+import { open } from '../mmpro-bricks-skills/mmpro-test.mjs';
+const b = await open({ url: 'https://example.com/', width: 390, height: 844, mobile: true });
+try {
+  await b.tap('.dwc-nest-toggle--open'); await b.settle();
+  console.log(await b.box('.dwc-nav-wrapper'), b.errors);
+  await b.shot('menu.png');
+} finally { await b.close(); }
+```
+
 * Never attach to the user's own Chrome or ask them to relaunch theirs with a debugging port.
-* Set the viewport with `Emulation.setDeviceMetricsOverride`. Check desktop and a width below the
-  breakpoint.
+* Check desktop and a width below the breakpoint. Below it, also run once with `adminBar: true`.
 * **MMPro's code is running** when, below the breakpoint, `document.documentElement.classList`
   contains `dwc-mobile`. If it doesn't, the code blocks did not run: code execution is off
   (Bricks > Settings > Custom code). Stop and tell the user.
-* Open a dropdown by dispatching the event its handler listens for (`mouseenter` on the
-  `.brxe-dropdown`, or a click on the toggle). Wait for `transitionend` before measuring: positions
-  read mid-animation are wrong.
+* Open a dropdown with `hover(text)` on desktop or `tap(selector)` below the breakpoint, then
+  `settle()` before measuring. Positions read mid-animation are wrong.
+* When a rule of yours doesn't apply, run `why(selector, property)` before you change anything.
+* In test URLs use `nocache` or long keys only. WordPress treats short keys such as `m`, `w`, `p` and
+  `s` as its own and serves a different page.
 
 **What you cannot check**, and must hand to the user: the builder view, builder-only attributes
 (`builder-preview-content-width`, `preview-alignment`, `preview-buffer`, `data-hide-instruction`),

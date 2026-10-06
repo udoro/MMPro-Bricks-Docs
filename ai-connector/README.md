@@ -42,10 +42,11 @@ The skills files teach your agent how Mega Menu Pro works in Bricks.
 2. Paste this into the chat and send it:
 
 ```
-Use curl to download these three files into a folder called mmpro-bricks-skills in this project. Then read mmpro-bricks-skills/mega-menu-pro-bricks-skills.md and follow it.
+Use curl to download these four files into a folder called mmpro-bricks-skills in this project. Then read mmpro-bricks-skills/mega-menu-pro-bricks-skills.md and follow it.
 https://raw.githubusercontent.com/udoro/MMPro-Bricks-Docs/main/ai-connector/mmpro-bricks-skills/mega-menu-pro-bricks-skills.md
 https://raw.githubusercontent.com/udoro/MMPro-Bricks-Docs/main/ai-connector/mmpro-bricks-skills/mega-menu-pro-bricks-skills-build.md
 https://raw.githubusercontent.com/udoro/MMPro-Bricks-Docs/main/ai-connector/mmpro-bricks-skills/mega-menu-pro-bricks-skills-reference.md
+https://raw.githubusercontent.com/udoro/MMPro-Bricks-Docs/main/ai-connector/mmpro-bricks-skills/mmpro-test.mjs
 ```
 
 To update the skills later, paste the same message again.

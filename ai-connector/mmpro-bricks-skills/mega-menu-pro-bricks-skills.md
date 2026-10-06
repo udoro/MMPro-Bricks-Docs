@@ -13,6 +13,7 @@ abilities.
 | --- | --- | --- |
 | `mega-menu-pro-bricks-skills-build.md` | Workflow, ability calls, element shapes, rules and gotchas | In full, on the build path only |
 | `mega-menu-pro-bricks-skills-reference.md` | Element map, attribute tables, CSS variables, JS options | Never in full. Grep one section |
+| `mmpro-test.mjs` | Headless Chrome helper: open the page, act, measure, screenshot, measure screenshots | Import it when the build file's Verification needs a browser. Don't read it unless it fails |
 
 ***
 
@@ -146,16 +147,20 @@ wait for agreement. If the answer is no, drop it rather than recording it somewh
 
 ## Before you say you are done
 
-End every task with a short report. Four lines, not a paragraph.
+End every task with a short report. Five lines, not a paragraph.
 
-**Time.** Take a timestamp before your first Bricks call and another at the end (`date +%s`). Give
-the elapsed figure.
+**Time.** Always give it. Run `date +%s` when you start and again at the end. If the task spans
+several messages, save the start value in a file, so a context summary can't lose it.
 
 **Calls.** How many Bricks ability calls you made.
 
 **What changed.** Elements, attributes, variables and options you touched, by name. Name templates
 and elements by their title, not only their ID. If you replaced
 or deleted anything, say so first.
+
+**Custom code.** Name every place that now holds CSS or JS that MMPro doesn't ship: each global
+class, element, code block or stylesheet, and what it styles. Say where the mobile rules are. Write
+`Custom code: none` when you added none, and `No custom JS` when it is all CSS.
 
 **What you verified, and how.** Say which level you reached: persisted (read-back) or rendered
 (published page). Name anything you could not check as unverified.
@@ -165,6 +170,7 @@ or deleted anything, say so first.
 ```
 4m 10s, 6 Bricks calls.
 Changed: Nav (Nestable) data-slide-in-direction "" -> "left"; --menu-item-clr #000 -> #1a1a2e.
+Custom code: none.
 Verified: rendered. Published page at 390px opens the menu from the left; computed color matches.
 Unverified: builder view.
 ```
