@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       MMPro AI Abilities
  * Description:       Lets AI agents read and edit Mega Menu Pro headers in Bricks through the WordPress Abilities API and MCP.
- * Version:           0.4.0
+ * Version:           0.4.1
  * Update URI:        https://github.com/udoro/MMPro-Bricks-Docs
  * Requires at least: 6.9
  * Requires PHP:      7.4
@@ -27,7 +27,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class MMPro_AI_Abilities {
 
-	const VERSION          = '0.4.0';
+	const VERSION          = '0.4.1';
 
 	/** Updates: the "Update URI" header sends WordPress's update check for this plugin here. */
 	const SLUG             = 'mmpro-ai-abilities';
@@ -262,7 +262,7 @@ final class MMPro_AI_Abilities {
 		self::register(
 			'set-menu-item',
 			'Set menu item text or link',
-			'Change the text or link of a menu item or a link inside a dropdown or mega menu. Works on text-link and text-basic elements, and on the text of a Dropdown.',
+			'Change the text or link of a menu item, a link inside a dropdown or mega menu, or a link in a header row. Works on text-link and text-basic elements, and on the text of a Dropdown.',
 			[
 				'postId'         => $post_id,
 				'elementId'      => [ 'type' => 'string' ],
@@ -281,7 +281,7 @@ final class MMPro_AI_Abilities {
 		self::register(
 			'duplicate-element',
 			'Duplicate a menu element',
-			'Copy an element and everything inside it, with new IDs, next to the original. Use it to add a menu item, a dropdown or a mega menu by copying one of the same kind. Optional text and url apply to the copy. Only elements inside Nav items can be copied.',
+			'Copy an element and everything inside it, with new IDs, next to the original. Use it to add a menu item, a dropdown or a mega menu by copying one of the same kind. Optional text and url apply to the copy. Only elements inside Nav items or a header row, or a header row itself, can be copied.',
 			[
 				'postId'         => $post_id,
 				'elementId'      => [ 'type' => 'string' ],
@@ -303,7 +303,7 @@ final class MMPro_AI_Abilities {
 		self::register(
 			'remove-element',
 			'Remove a menu element',
-			'Remove an element and everything inside it. Only elements inside Nav items can be removed; the header structure itself is protected. A revision is saved first.',
+			'Remove an element and everything inside it. Only elements inside Nav items or a header row, or a header row itself, can be removed; the header structure itself is protected. A revision is saved first.',
 			[
 				'postId'         => $post_id,
 				'elementId'      => [ 'type' => 'string' ],
@@ -319,7 +319,7 @@ final class MMPro_AI_Abilities {
 		self::register(
 			'add-elements',
 			'Add elements',
-			'Add a tree of Bricks elements inside Nav items, for example columns and links inside a mega menu\'s Content Inner. elements is an array of {name, label?, settings?, children?}; IDs are generated. Code-running settings are refused. position is the index among the parent\'s children (default: end).',
+			'Add a tree of Bricks elements inside Nav items (for example columns and links inside a mega menu\'s Content Inner) or inside a header row. To add a header row, pass Header Pro as parentId and a block element (never a container); position 0 puts it above the main container. get-header lists the rows. elements is an array of {name, label?, settings?, children?}; IDs are generated. Code-running settings are refused. position is the index among the parent\'s children (default: end).',
 			[
 				'postId'         => $post_id,
 				'parentId'       => [ 'type' => 'string' ],
@@ -343,7 +343,7 @@ final class MMPro_AI_Abilities {
 		self::register(
 			'set-element-settings',
 			'Set element settings',
-			'Change Bricks settings of one existing element inside Nav items, the way the builder panel does: settings maps a key to its new value, null removes the key, keys not named stay as they are. Code-running keys, _attributes (use mmpro/set-attributes), _hidden and megaMenu are refused. A Content Inner keeps tag "li"; a dropdown Content keeps its tag.',
+			'Change Bricks settings of one existing element inside Nav items or a header row (or the row itself), the way the builder panel does: settings maps a key to its new value, null removes the key, keys not named stay as they are. Code-running keys, _attributes (use mmpro/set-attributes), _hidden and megaMenu are refused. A Content Inner keeps tag "li"; a dropdown Content keeps its tag.',
 			[
 				'postId'         => $post_id,
 				'elementId'      => [ 'type' => 'string' ],
@@ -556,12 +556,14 @@ final class MMPro_AI_Abilities {
 			'variant'    => false !== stripos( (string) ( $root['label'] ?? '' ), 'lite' ) ? 'lite' : 'full',
 			'digest'     => self::digest( $elements ),
 			'ids'        => [
-				'headerPro'  => $map['headerPro'],
-				'nav'        => $map['nav'],
-				'navItems'   => $map['navItems'],
-				'options'    => $map['options'],
-				'codeBlocks' => $map['codeBlocks'],
+				'headerPro'     => $map['headerPro'],
+				'mainContainer' => self::main_container( $elements, $idx, $map ),
+				'nav'           => $map['nav'],
+				'navItems'      => $map['navItems'],
+				'options'       => $map['options'],
+				'codeBlocks'    => $map['codeBlocks'],
 			],
+			'rows'       => self::header_rows( $elements, $idx, $map ),
 			'attributes' => [
 				'headerPro' => self::attribute_map( $root ),
 				'nav'       => $map['nav'] ? self::attribute_map( $elements[ $idx[ $map['nav'] ] ] ) : null,
@@ -851,7 +853,7 @@ final class MMPro_AI_Abilities {
 		list( $post_id, $elements, $idx, $map ) = $header;
 
 		$element_id = (string) ( $input['elementId'] ?? '' );
-		$check      = self::require_inside_nav_items( $elements, $idx, $map, $element_id, false );
+		$check      = self::require_editable( $elements, $idx, $map, $element_id, false );
 		if ( is_wp_error( $check ) ) {
 			return $check;
 		}
@@ -887,7 +889,7 @@ final class MMPro_AI_Abilities {
 		list( $post_id, $elements, $idx, $map ) = $header;
 
 		$source_id = (string) ( $input['elementId'] ?? '' );
-		$check     = self::require_inside_nav_items( $elements, $idx, $map, $source_id, false );
+		$check     = self::require_editable( $elements, $idx, $map, $source_id, false );
 		if ( is_wp_error( $check ) ) {
 			return $check;
 		}
@@ -974,7 +976,7 @@ final class MMPro_AI_Abilities {
 		list( $post_id, $elements, $idx, $map ) = $header;
 
 		$element_id = (string) ( $input['elementId'] ?? '' );
-		$check      = self::require_inside_nav_items( $elements, $idx, $map, $element_id, false );
+		$check      = self::require_editable( $elements, $idx, $map, $element_id, false );
 		if ( is_wp_error( $check ) ) {
 			return $check;
 		}
@@ -1021,12 +1023,19 @@ final class MMPro_AI_Abilities {
 		list( $post_id, $elements, $idx, $map ) = $header;
 
 		$parent_id = (string) ( $input['parentId'] ?? '' );
-		$check     = self::require_inside_nav_items( $elements, $idx, $map, $parent_id, true );
+		$check     = self::require_editable( $elements, $idx, $map, $parent_id, true );
 		if ( is_wp_error( $check ) ) {
 			return $check;
 		}
 		if ( ! self::is_nestable( $elements[ $idx[ $parent_id ] ]['name'] ?? '' ) ) {
 			return self::error( 'not_nestable', "Element {$parent_id} cannot have children." );
+		}
+		if ( $parent_id === $map['headerPro'] ) {
+			foreach ( (array) ( $input['elements'] ?? [] ) as $node ) {
+				if ( ! is_array( $node ) || 'block' !== ( $node['name'] ?? '' ) ) {
+					return self::error( 'row_must_be_block', 'A header row is a Bricks block element (not a container) placed directly inside Header Pro. Mega Menu Pro then moves the header\'s side padding onto the block, so the row\'s background spans the full width.' );
+				}
+			}
 		}
 		if ( self::is_mega_content( $elements, $idx, $parent_id ) ) {
 			foreach ( (array) ( $input['elements'] ?? [] ) as $node ) {
@@ -1090,7 +1099,7 @@ final class MMPro_AI_Abilities {
 		list( $post_id, $elements, $idx, $map ) = $header;
 
 		$element_id = (string) ( $input['elementId'] ?? '' );
-		$check      = self::require_inside_nav_items( $elements, $idx, $map, $element_id, false );
+		$check      = self::require_editable( $elements, $idx, $map, $element_id, false );
 		if ( is_wp_error( $check ) ) {
 			return $check;
 		}
@@ -1784,20 +1793,76 @@ final class MMPro_AI_Abilities {
 		return false;
 	}
 
-	private static function require_inside_nav_items( array $elements, array $idx, array $map, $id, $allow_nav_items ) {
+	/**
+	 * Agents may change the menu (inside Nav items) and header rows: blocks directly inside Header
+	 * Pro next to its main container. $as_parent also allows Nav items itself, and Header Pro for
+	 * adding a row.
+	 */
+	private static function require_editable( array $elements, array $idx, array $map, $id, $as_parent ) {
 		if ( ! isset( $idx[ $id ] ) ) {
 			return self::error( 'no_element', "No element {$id} in this header." );
 		}
 		if ( ! $map['navItems'] ) {
 			return self::error( 'no_nav_items', 'The Nav items block (brx-nav-nested-items) was not found.' );
 		}
-		if ( $allow_nav_items && $id === $map['navItems'] ) {
+		if ( $as_parent && ( $id === $map['navItems'] || $id === $map['headerPro'] ) ) {
 			return true;
 		}
-		if ( ! self::is_descendant( $elements, $idx, $id, $map['navItems'] ) ) {
-			return self::error( 'protected', "Element {$id} is part of the header structure, not the menu. Only elements inside Nav items can be changed this way." );
+		if ( self::is_descendant( $elements, $idx, $id, $map['navItems'] ) ) {
+			return true;
 		}
-		return true;
+		foreach ( self::header_rows( $elements, $idx, $map ) as $row ) {
+			if ( $id === $row['id'] || self::is_descendant( $elements, $idx, $id, $row['id'] ) ) {
+				return true;
+			}
+		}
+		return self::error( 'protected', "Element {$id} is part of the header structure. Only elements inside Nav items, or inside a header row (a block directly inside Header Pro), can be changed this way." );
+	}
+
+	/**
+	 * Header rows: Bricks blocks directly inside Header Pro that do not hold the menu. Mega Menu Pro
+	 * moves the header's side padding onto these blocks, so each row's background spans the width.
+	 */
+	private static function header_rows( array $elements, array $idx, array $map ) {
+		$rows = [];
+		if ( ! $map['headerPro'] || ! isset( $idx[ $map['headerPro'] ] ) ) {
+			return $rows;
+		}
+		$main = self::main_container( $elements, $idx, $map );
+		$seen = false;
+		foreach ( (array) ( $elements[ $idx[ $map['headerPro'] ] ]['children'] ?? [] ) as $child ) {
+			$child = (string) $child;
+			if ( $child === $main ) {
+				$seen = true;
+				continue;
+			}
+			if ( ! isset( $idx[ $child ] ) || 'block' !== ( $elements[ $idx[ $child ] ]['name'] ?? '' ) ) {
+				continue;
+			}
+			if ( $map['nav'] && self::is_descendant( $elements, $idx, $map['nav'], $child ) ) {
+				continue;
+			}
+			$rows[] = [
+				'id'       => $child,
+				'label'    => (string) ( $elements[ $idx[ $child ] ]['label'] ?? '' ),
+				'position' => $seen ? 'below' : 'above',
+			];
+		}
+		return $rows;
+	}
+
+	/** The child of Header Pro that holds the menu. */
+	private static function main_container( array $elements, array $idx, array $map ) {
+		if ( ! $map['headerPro'] || ! $map['nav'] || ! isset( $idx[ $map['headerPro'] ] ) ) {
+			return null;
+		}
+		foreach ( (array) ( $elements[ $idx[ $map['headerPro'] ] ]['children'] ?? [] ) as $child ) {
+			$child = (string) $child;
+			if ( $child === $map['nav'] || self::is_descendant( $elements, $idx, $map['nav'], $child ) ) {
+				return $child;
+			}
+		}
+		return null;
 	}
 
 	/** The element and all its descendants, element first. */

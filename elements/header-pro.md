@@ -30,6 +30,27 @@ To change a setting, select **Header Pro**, open **Style > Attributes**, and cha
 
 ***
 
+## A header with more than one row
+
+You can add rows to the header, for example a top bar with your email, phone number and social links above the menu.
+
+1. In the **Structure** panel, add a **Block** element directly inside **Header Pro**, above or below the container that holds the logo and the menu. Use a Block, not a Container.
+2. Put the row's content inside the block.
+3. Give the block its own background color.
+
+As soon as Header Pro holds a block, it moves its side padding (`--header-inline-padding`) onto each block, so every row's background reaches both edges of the screen. A Container doesn't get this padding, which is why the row has to be a Block.
+
+**Tips**
+
+* **Line the rows up.** Give the content inside your row the same width as the header's container, so it lines up with the logo and the menu.
+* **The menu row's background** comes from `--header-bg`. To give the menu row a full-width block of its own, wrap the header's container in a block: that block takes `--header-bg` for you.
+* **Mega menus** open at the bottom edge of the header.
+* **On mobile**, the rows stay at the top and the mobile menu opens below them. For a mobile menu that covers the whole screen, set `data-fullscreen-mobile-menu` to `true` on Header Pro (see [Attributes](#attributes)).
+* **Keep the row short on phones.** Show icons only, or move items into the mobile menu with [`data-breakin`](../moving-elements.md#data-breakin).
+* **With the AI Connector,** your agent can add a row and fill it for you.
+
+***
+
 ## Turn a setting off on one page
 
 Add these attributes to the first section or div of a page, and leave their **Value** empty. See [Change an attribute](../README.md#change-an-attribute).

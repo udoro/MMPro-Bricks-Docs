@@ -204,6 +204,21 @@ If Tabbed Navigation is on the site, change its breakpoint too (reference sectio
 Never raise the breakpoint to show the mobile menu on desktop. Set `data-offcanvas` to `true`
 instead (Full only).
 
+### Add a header row
+
+* A header row (a top bar, a second row) is a Bricks `block` directly inside Header Pro, above or
+  below the main container: `mmpro/add-elements` with Header Pro as `parentId`, `position: 0` for the
+  top. Never a `container`: Mega Menu Pro moves `--header-inline-padding` from Header Pro onto these
+  blocks only, so each row's background spans the full width.
+* `mmpro/get-header` lists the rows. Everything inside a row can be changed like the menu.
+* Once a row exists, Header Pro has no side padding. Give the main container
+  (`.dwc-nest-header__container`) its width and side spacing in your CSS, and give the row's content
+  the same width, so the rows line up.
+* The menu row's background is `--header-bg`; a texture or image for it goes on `.dwc-nest-header`
+  in your CSS. Rows cover it with their own background.
+* Wrapping the main container in a block (it then takes `--header-bg`) is a builder step for the
+  user: the plugin doesn't move the main container.
+
 ### Import or repair a header
 
 * `mmpro-send.mjs import` creates the header with its code blocks switched on. It has no conditions:
@@ -264,6 +279,9 @@ with "Render without wrapper" on.
   CSS with what you sent.
 * Desktop-only rules start with `html:not(.dwc-mobile)`, mobile-only rules with `html.dwc-mobile`. A
   rule with neither applies to both.
+* A link that shows text, such as a link in a list, takes 100% of its parent's width, so the whole
+  line is the click target. Icon links, and links that show only an icon on small screens, keep their
+  own width: give them a tap area with `min-height` and `padding` instead.
 * Keep the CSS for every class you create in one local file in your working directory, and save each
   class from it. After a fix, save only the classes that changed.
 * A draft injected with `css()` loads where class CSS does, but only the published page proves it.
@@ -304,7 +322,8 @@ with "Render without wrapper" on.
 * Mobile settings are attributes on Nav (Nestable). A Dropdown's own `data-submenu-reveal` overrides
   the Nav's.
 * A new Toggle outside the Nav needs its `toggleSelector` setting set to `.brxe-nav-nested`. The
-  plugin only adds elements inside Nav items, so this is a builder step for the user.
+  plugin adds elements only inside Nav items and header rows. Anywhere else, this is a builder step
+  for the user.
 * With `data-submenu-reveal` `slide` (the default), the back button is the open item's own toggle
   `button`: `position: fixed` at the top of `.dwc-nav-wrapper`, its text (the item name, or
   `data-back-text`) in `::after`, the chevron in its `svg`.
@@ -312,6 +331,12 @@ with "Render without wrapper" on.
   `none`. The wrapper's transform keeps the back button inside the menu.
 * Logged-in users have the WordPress admin bar at the top of the screen. Offset anything you fix to
   the top with `var(--wp-admin--admin-bar--height, 0px)`, as MMPro does.
+* On mobile, menu items and dropdown content sit on the mobile menu's background, not the header's.
+  Text that is light on a dark desktop header can end up light on a light background. When the
+  header, dropdown and mobile menu backgrounds differ, set the mobile text colours with
+  `html.dwc-mobile` rules or variables. In the browser, open the mobile menu and one submenu, and
+  read the computed text colour and the background behind it for menu items, the back button,
+  dropdown text and the last-item button. Fix anything below 4.5:1.
 
 ### Overlay header and sticky
 
