@@ -329,6 +329,10 @@ with "Render without wrapper" on.
   `data-back-text`) in `::after`, the chevron in its `svg`.
 * To stop the menu's slide-in, set `.dwc-nav-wrapper` to `transform: translateX(0) !important`, never
   `none`. The wrapper's transform keeps the back button inside the menu.
+* If the header is taller than 80px on mobile (all rows together: read `--dwc-nest-header-height` on
+  `body` at 390px), set `data-fullscreen-mobile-menu` to `true` on Header Pro. Otherwise the back
+  button panel is as tall as the header. Tell the user you turned it on and why, with the measured
+  height.
 * Logged-in users have the WordPress admin bar at the top of the screen. Offset anything you fix to
   the top with `var(--wp-admin--admin-bar--height, 0px)`, as MMPro does.
 * On mobile, menu items and dropdown content sit on the mobile menu's background, not the header's.
