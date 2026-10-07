@@ -14,6 +14,7 @@ abilities.
 | `mega-menu-pro-bricks-skills-build.md` | Workflow, ability calls, element shapes, rules and gotchas | In full, on the build path only |
 | `mega-menu-pro-bricks-skills-reference.md` | Element map, attribute tables, CSS variables, JS options | Never in full. Grep one section |
 | `mmpro-test.mjs` | Headless Chrome helper: open the page, act, measure, screenshot, measure screenshots | Import it when the build file's Verification needs a browser. Don't read it unless it fails |
+| `mmpro-send.mjs` | Sends a template file to the site to import or repair a header | Run it when the build file says. Don't read it unless it fails |
 
 ***
 
@@ -98,7 +99,7 @@ header tree after every write, or inventory anything you are not touching.
 Call `mmpro/get-header` with no input. It finds the Mega Menu Pro header template and returns its
 element IDs (Header Pro, Nav (Nestable), Nav items, MENU Styles / Options), attributes, menu tree,
 JS options and `digest`. If it lists more than one header, ask the user which, then call it again with
-`postId`.
+`postId`. If it finds none, see the build file, section 2.
 
 The label carries the version: `Header Pro | v1.4.6` is Full, `Header Pro | v1.4.6 Lite` is Lite.
 The reference describes 1.4.6 and 1.4.5. For any other version, compare the live attribute names on Header Pro

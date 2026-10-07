@@ -51,9 +51,12 @@ for scripting and parsing. Never `python` or `jq`.
 
 Follow "Is the site connected" and "Find the header" in the entry file. Record the IDs in its table.
 
-**Hard stop:** if no header template has a root `section` labelled `Header Pro`, tell the user:
-`"I can't find a Mega Menu Pro header on this site. Import the header template first (see the
-docs: Installation), then ask me again."` Do not build a header from scratch out of Bricks elements.
+**No header:** if no header template has a root `section` labelled `Header Pro`, ask the user for the
+template file they downloaded (Full or Lite). Find their logo with `bricks/find-media` and ask them
+to confirm it. Then import it:
+`node mmpro-bricks-skills/mmpro-send.mjs import "<path to the .json file>" --logo <attachment ID>`
+If it reports `code_execution_off`, tell the user to turn on **Code execution** in Bricks > Settings >
+Custom code for their role, then run it again. Never build a header from Bricks elements.
 
 ### 3. Scope and confirmation gate
 
@@ -201,6 +204,17 @@ If Tabbed Navigation is on the site, change its breakpoint too (reference sectio
 Never raise the breakpoint to show the mobile menu on desktop. Set `data-offcanvas` to `true`
 instead (Full only).
 
+### Import or repair a header
+
+* `mmpro-send.mjs import` creates the header with its code blocks switched on. It has no conditions:
+  assign it with `bricks/set-template-conditions`.
+* `mmpro-send.mjs repair <postId> "<file>"` switches Execute code back on and puts back lost
+  backslashes. It needs the file of the same version as the header. It leaves code blocks the user
+  changed alone, and keeps a revision.
+* The helper finds the connection in the agent's MCP settings. If it can't, ask the user for the site
+  URL, their username and an application password, and set `MMPRO_SITE_URL`, `MMPRO_USER` and
+  `MMPRO_APP_PASSWORD`.
+
 ### Starter templates
 
 Starter templates come from the user's remote templates (Bricks > Settings > Templates). Ask the user
@@ -234,6 +248,10 @@ with "Render without wrapper" on.
   (the `rule` input of `mmpro/set-css-variables`). Do not change the `:root` value for these.
 * Sidebar mode needs the `postid-23338` rules in MENU Styles / Options changed to the template's ID.
   The plugin cannot edit them: give the user the builder steps (reference section 7).
+* Bricks' Templates > Import switches off Execute code on every code block, and
+  `bricks/import-transfer-package` also strips backslashes. Never import an MMPro template with
+  either: use `mmpro-send.mjs import`. For a header already imported that way, run
+  `mmpro-send.mjs repair`.
 
 ### Your own CSS
 

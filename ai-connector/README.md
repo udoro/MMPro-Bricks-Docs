@@ -10,7 +10,7 @@ The AI Connector lets an AI agent work on your Mega Menu Pro header in Bricks. Y
 
 ## What you need
 
-* **Bricks 2.4 or later**, with Mega Menu Pro's header template imported.
+* **Bricks 2.4 or later**, with Mega Menu Pro's header template imported, or your agent can import it for you.
 * An **AI agent that can use MCP tools**, such as [Claude Code](https://docs.claude.com/en/docs/claude-code/overview), [Codex](https://openai.com/codex/) or [Cursor](https://www.cursor.com).
 
 A chat window with no tools won't work.
@@ -27,7 +27,7 @@ Come back here once your agent is connected to your site.
 
 ### Step 2: Install MMPro AI Abilities
 
-1. [Download MMPro AI Abilities](https://github.com/udoro/MMPro-Bricks-Docs/raw/main/ai-connector/mmpro-ai-abilities/releases/mmpro-ai-abilities-v0.3.3.zip).
+1. [Download MMPro AI Abilities](https://github.com/udoro/MMPro-Bricks-Docs/raw/main/ai-connector/mmpro-ai-abilities/releases/mmpro-ai-abilities-v0.4.0.zip).
 2. In WordPress, go to **Plugins > Add New Plugin > Upload Plugin**.
 3. Choose the zip file you downloaded and click **Install Now**.
 4. Click **Activate**.
@@ -42,11 +42,12 @@ The skills files teach your agent how Mega Menu Pro works in Bricks.
 2. Paste this into the chat and send it:
 
 ```
-Use curl to download these four files into a folder called mmpro-bricks-skills in this project. Then read mmpro-bricks-skills/mega-menu-pro-bricks-skills.md and follow it.
+Use curl to download these five files into a folder called mmpro-bricks-skills in this project. Then read mmpro-bricks-skills/mega-menu-pro-bricks-skills.md and follow it.
 https://raw.githubusercontent.com/udoro/MMPro-Bricks-Docs/main/ai-connector/mmpro-bricks-skills/mega-menu-pro-bricks-skills.md
 https://raw.githubusercontent.com/udoro/MMPro-Bricks-Docs/main/ai-connector/mmpro-bricks-skills/mega-menu-pro-bricks-skills-build.md
 https://raw.githubusercontent.com/udoro/MMPro-Bricks-Docs/main/ai-connector/mmpro-bricks-skills/mega-menu-pro-bricks-skills-reference.md
 https://raw.githubusercontent.com/udoro/MMPro-Bricks-Docs/main/ai-connector/mmpro-bricks-skills/mmpro-test.mjs
+https://raw.githubusercontent.com/udoro/MMPro-Bricks-Docs/main/ai-connector/mmpro-bricks-skills/mmpro-send.mjs
 ```
 
 To update the skills later, paste the same message again.

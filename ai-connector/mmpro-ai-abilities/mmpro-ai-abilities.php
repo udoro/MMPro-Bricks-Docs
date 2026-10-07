@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       MMPro AI Abilities
  * Description:       Lets AI agents read and edit Mega Menu Pro headers in Bricks through the WordPress Abilities API and MCP.
- * Version:           0.3.3
+ * Version:           0.4.0
  * Update URI:        https://github.com/udoro/MMPro-Bricks-Docs
  * Requires at least: 6.9
  * Requires PHP:      7.4
@@ -20,10 +20,14 @@ defined( 'ABSPATH' ) || exit;
  * the way the builder does: revision first, Bricks' security check, then the slashed element list.
  *
  * Every write is limited to a header template whose root element is labelled "Header Pro".
+ *
+ * Bricks' imports (Templates > Import and the transfer package) switch off Execute code on every
+ * code block, and the transfer package also loses backslashes. import-header and
+ * repair-code-blocks keep both, for users Bricks itself allows to execute code.
  */
 final class MMPro_AI_Abilities {
 
-	const VERSION          = '0.3.3';
+	const VERSION          = '0.4.0';
 
 	/** Updates: the "Update URI" header sends WordPress's update check for this plugin here. */
 	const SLUG             = 'mmpro-ai-abilities';
@@ -163,6 +167,10 @@ final class MMPro_AI_Abilities {
 		$digest  = [
 			'type'        => 'string',
 			'description' => 'Digest from mmpro/get-header or the previous write. The write is refused if the header changed since then.',
+		];
+		$template = [
+			'type'        => 'object',
+			'description' => 'A Mega Menu Pro header template file (.json), exactly as Bricks exports it.',
 		];
 
 		self::register(
@@ -371,6 +379,45 @@ final class MMPro_AI_Abilities {
 			'can_write_code',
 			[ false, false, true ]
 		);
+
+		self::register(
+			'import-header',
+			'Import a Mega Menu Pro header',
+			'Create a header template from a Mega Menu Pro template file, the way Bricks\' Templates > Import does, but with its code blocks switched on and their backslashes kept. Needs Bricks code execution for this user. The template is published with no conditions: assign it with bricks/set-template-conditions. Missing global classes and variables are added; existing ones are never changed. The file is too large for a tool call: send it with mmpro-send.mjs.',
+			[
+				'template'         => $template,
+				'title'            => [
+					'type'        => 'string',
+					'description' => 'Template title. Defaults to the file\'s title; " (2)", " (3)" ... is added when that title is taken.',
+				],
+				'logoAttachmentId' => [
+					'type'        => 'integer',
+					'minimum'     => 1,
+					'description' => 'Media library attachment for the logo (the header\'s SVG element).',
+				],
+				'dryRun'           => $dry_run,
+			],
+			[ 'template' ],
+			'import_header',
+			'can_import',
+			[ false, false, false ]
+		);
+
+		self::register(
+			'repair-code-blocks',
+			'Repair code blocks',
+			'Compare the header\'s code blocks with the Mega Menu Pro template file of the same version. A block that only lost backslashes gets the file\'s text back, and Execute code is switched on where it is off. Blocks with any other change are left alone and reported. A revision is saved first. Needs Bricks code execution for this user. The file is too large for a tool call: send it with mmpro-send.mjs.',
+			[
+				'postId'         => $post_id,
+				'template'       => $template,
+				'dryRun'         => $dry_run,
+				'expectedDigest' => $digest,
+			],
+			[ 'postId', 'template' ],
+			'repair_code_blocks',
+			'can_write',
+			[ false, false, true ]
+		);
 	}
 
 	private static function register( $name, $label, $description, $properties, $required, $execute, $permission, $annotations ) {
@@ -445,6 +492,20 @@ final class MMPro_AI_Abilities {
 	/** Bricks drops new elements for users who may only edit existing ones. */
 	public static function can_write_structure( $input = null ) {
 		if ( ! self::can_write( $input ) ) {
+			return false;
+		}
+		if ( class_exists( '\Bricks\Builder_Permissions' ) && ! \Bricks\Builder_Permissions::user_can_modify_element_count() ) {
+			return false;
+		}
+		return true;
+	}
+
+	/** Importing creates a template, so it needs the builder rights a Bricks import needs. Code rights are checked in the ability, to explain the fix. */
+	public static function can_import( $input = null ) {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return false;
+		}
+		if ( ! class_exists( '\Bricks\Capabilities' ) || ! \Bricks\Capabilities::current_user_can_use_builder() ) {
 			return false;
 		}
 		if ( class_exists( '\Bricks\Builder_Permissions' ) && ! \Bricks\Builder_Permissions::user_can_modify_element_count() ) {
@@ -1185,6 +1246,288 @@ final class MMPro_AI_Abilities {
 	}
 
 	/* ---------------------------------------------------------------------------------------- */
+	/* Import and repair                                                                        */
+	/* ---------------------------------------------------------------------------------------- */
+
+	/**
+	 * Creates the header the way Bricks' import_template() does (classes, variables, template
+	 * settings, new element IDs), except that code blocks keep Execute code and the elements are
+	 * saved slashed, so no backslash is lost.
+	 */
+	public static function import_header( $input ) {
+		$ready = self::bricks_ready();
+		if ( is_wp_error( $ready ) ) {
+			return $ready;
+		}
+		$code = self::code_permission();
+		if ( is_wp_error( $code ) ) {
+			return $code;
+		}
+		$template = $input['template'] ?? null;
+		$source   = self::check_template( $template );
+		if ( is_wp_error( $source ) ) {
+			return $source;
+		}
+
+		$title    = trim( (string) ( $input['title'] ?? '' ) );
+		$title    = self::unique_title( '' !== $title ? $title : (string) ( $template['title'] ?? 'Mega Menu Pro Header' ) );
+		$warnings = [];
+		$elements = $source;
+
+		foreach ( $elements as &$element ) {
+			if ( 'code' === $element['name'] ) {
+				$element['settings']                = is_array( $element['settings'] ?? null ) ? $element['settings'] : [];
+				$element['settings']['executeCode'] = true;
+			}
+		}
+		unset( $element );
+
+		// The file's logo points to the site the template was exported from.
+		$logo_id = absint( $input['logoAttachmentId'] ?? 0 );
+		if ( $logo_id ) {
+			$url = wp_get_attachment_url( $logo_id );
+			if ( ! $url ) {
+				return self::error( 'logo_missing', "Attachment {$logo_id} does not exist." );
+			}
+			$path = get_attached_file( $logo_id );
+			$file = [
+				'id'       => $logo_id,
+				'filename' => wp_basename( $path ? $path : $url ),
+				'url'      => $url,
+			];
+			foreach ( $elements as &$element ) {
+				if ( 'svg' === $element['name'] ) {
+					$element['settings']['file'] = $file;
+				}
+			}
+			unset( $element );
+		} else {
+			$site_host = wp_parse_url( home_url(), PHP_URL_HOST );
+			foreach ( $elements as $element ) {
+				$host = wp_parse_url( (string) ( $element['settings']['file']['url'] ?? '' ), PHP_URL_HOST );
+				if ( 'svg' === $element['name'] && $host && $host !== $site_host ) {
+					$warnings[] = "The logo points to {$host}. Pass logoAttachmentId, or set the logo in the builder.";
+				}
+			}
+		}
+
+		$classes   = self::plan_classes( $template['global_classes'] ?? [] );
+		$variables = self::plan_variables( $template['globalVariables'] ?? [], $template['globalVariablesCategories'] ?? [] );
+		if ( ! $variables['allowed'] ) {
+			$warnings[] = 'The file\'s global variables were not added: this user may not use the variable manager.';
+		}
+		$elements = self::remap_classes( $elements, $classes['map'] );
+
+		$template_settings = is_array( $template['templateSettings'] ?? null ) ? $template['templateSettings'] : [];
+		foreach ( [ 'templatePreviewPostId', 'templatePreviewTerm', 'templatePreviewAuthor', 'templatePreviewPostType', 'templateConditions' ] as $key ) {
+			unset( $template_settings[ $key ] );
+		}
+		$page_settings = is_array( $template['pageSettings'] ?? null ) ? $template['pageSettings'] : [];
+
+		$result = [
+			'title'      => $title,
+			'classes'    => [
+				'added'  => $classes['added'],
+				'mapped' => $classes['mapped'],
+			],
+			'variables'  => [
+				'added'           => $variables['added'],
+				'categoriesAdded' => $variables['categoriesAdded'],
+			],
+			'conditions' => 'none',
+			'warnings'   => $warnings,
+		];
+		if ( ! empty( $input['dryRun'] ) ) {
+			$result['dryRun']   = true;
+			$result['elements'] = count( $elements );
+			return $result;
+		}
+
+		if ( $classes['added'] ) {
+			if ( is_callable( [ '\Bricks\Helpers', 'save_global_classes_in_db' ] ) ) {
+				\Bricks\Helpers::save_global_classes_in_db( $classes['classes'] );
+			} else {
+				update_option( self::option_key( 'BRICKS_DB_GLOBAL_CLASSES', 'bricks_global_classes' ), $classes['classes'] );
+			}
+		}
+		if ( $variables['added'] ) {
+			if ( is_callable( [ '\Bricks\Helpers', 'save_global_variables_in_db' ] ) ) {
+				\Bricks\Helpers::save_global_variables_in_db( $variables['variables'] );
+			} else {
+				update_option( self::option_key( 'BRICKS_DB_GLOBAL_VARIABLES', 'bricks_global_variables' ), $variables['variables'] );
+			}
+		}
+		if ( $variables['categoriesAdded'] ) {
+			update_option( self::option_key( 'BRICKS_DB_GLOBAL_VARIABLES_CATEGORIES', 'bricks_global_variables_categories' ), $variables['categories'], false );
+		}
+		if ( ( $variables['added'] || $variables['categoriesAdded'] ) && is_callable( [ '\Bricks\Ajax', 'generate_style_manager_css_file' ] ) ) {
+			\Bricks\Ajax::generate_style_manager_css_file();
+		}
+
+		if ( is_callable( [ '\Bricks\Helpers', 'generate_new_element_ids' ] ) ) {
+			$elements = array_values( \Bricks\Helpers::generate_new_element_ids( $elements ) );
+		}
+
+		$post_id = wp_insert_post(
+			[
+				'post_title'  => $title,
+				'post_type'   => 'bricks_template',
+				'post_status' => current_user_can( 'publish_posts' ) ? 'publish' : 'pending',
+			],
+			true
+		);
+		if ( is_wp_error( $post_id ) || ! $post_id ) {
+			return self::error( 'insert_failed', 'WordPress could not create the template.' );
+		}
+		update_post_meta( $post_id, self::template_type_key(), 'header' );
+		if ( $page_settings ) {
+			update_post_meta( $post_id, self::option_key( 'BRICKS_DB_PAGE_SETTINGS', '_bricks_page_settings' ), wp_slash( $page_settings ) );
+		}
+		if ( $template_settings ) {
+			update_post_meta( $post_id, self::option_key( 'BRICKS_DB_TEMPLATE_SETTINGS', '_bricks_template_settings' ), wp_slash( $template_settings ) );
+		}
+
+		// update_post_meta() unslashes; without wp_slash() backslashes in the code blocks are lost.
+		$checked = \Bricks\Helpers::security_check_elements_before_save( wp_slash( $elements ), $post_id, 'header' );
+		update_post_meta( $post_id, BRICKS_DB_PAGE_HEADER, $checked );
+		wp_cache_delete( $post_id, 'post_meta' );
+		$stored = get_post_meta( $post_id, BRICKS_DB_PAGE_HEADER, true );
+		$stored = is_array( $stored ) ? array_values( $stored ) : [];
+
+		if ( class_exists( '\Bricks\Database' ) && 'file' === \Bricks\Database::get_setting( 'cssLoading' ) && is_callable( [ '\Bricks\Assets_Files', 'generate_post_css_file' ] ) ) {
+			\Bricks\Assets_Files::generate_post_css_file( $post_id, 'header', $stored );
+		}
+
+		// Compare each stored code block with the file.
+		$blocks   = [];
+		$verified = true;
+		foreach ( $source as $src ) {
+			if ( 'code' !== $src['name'] ) {
+				continue;
+			}
+			$now = self::code_block_by_label( $stored, (string) ( $src['label'] ?? '' ) );
+			$css = (string) ( $now['settings']['cssCode'] ?? '' );
+			$js  = (string) ( $now['settings']['javascriptCode'] ?? '' );
+			$same = null !== $now
+				&& (string) ( $src['settings']['cssCode'] ?? '' ) === $css
+				&& (string) ( $src['settings']['javascriptCode'] ?? '' ) === $js;
+			$exec     = ! empty( $now['settings']['executeCode'] );
+			$blocks[] = [
+				'label'       => (string) ( $src['label'] ?? '' ),
+				'identical'   => $same,
+				'backslashes' => substr_count( $css . $js, '\\' ),
+				'executeCode' => $exec,
+			];
+			$verified = $verified && $same && $exec;
+		}
+
+		return array_merge(
+			$result,
+			[
+				'dryRun'     => false,
+				'templateId' => (int) $post_id,
+				'status'     => get_post_status( $post_id ),
+				'editUrl'    => add_query_arg( 'bricks', 'run', get_permalink( $post_id ) ),
+				'elements'   => count( $stored ),
+				'codeBlocks' => $blocks,
+				'verified'   => $verified,
+				'digest'     => self::digest( $stored ),
+			]
+		);
+	}
+
+	/**
+	 * Puts back what an import or a revision restore took from the code blocks: Execute code, and
+	 * backslashes (the stored text equals the file's text unslashed). Any other difference is the
+	 * site's own change and is left alone.
+	 */
+	public static function repair_code_blocks( $input ) {
+		$code = self::code_permission();
+		if ( is_wp_error( $code ) ) {
+			return $code;
+		}
+		$loaded = self::load_for_write( $input );
+		if ( is_wp_error( $loaded ) ) {
+			return $loaded;
+		}
+		list( $post_id, $elements, $idx, $map ) = $loaded;
+		$source = self::check_template( $input['template'] ?? null );
+		if ( is_wp_error( $source ) ) {
+			return $source;
+		}
+		$source_map = self::map( $source );
+		$live_label = (string) ( $elements[ $idx[ $map['headerPro'] ] ]['label'] ?? '' );
+		$file_label = (string) ( $source[ self::index( $source )[ $source_map['headerPro'] ] ]['label'] ?? '' );
+		if ( $live_label !== $file_label ) {
+			return self::error( 'version_mismatch', "This header is \"{$live_label}\" but the file is \"{$file_label}\". Use the template file of the same version." );
+		}
+
+		$report  = [];
+		$changed = false;
+		foreach ( $source as $src ) {
+			if ( 'code' !== $src['name'] ) {
+				continue;
+			}
+			$label = (string) ( $src['label'] ?? '' );
+			$k     = null;
+			foreach ( $elements as $i => $element ) {
+				if ( 'code' === ( $element['name'] ?? '' ) && (string) ( $element['label'] ?? '' ) === $label ) {
+					$k = $i;
+					break;
+				}
+			}
+			if ( null === $k ) {
+				$report[] = [
+					'label'  => $label,
+					'status' => 'missing',
+					'notes'  => [ 'No code block with this label in the header.' ],
+				];
+				continue;
+			}
+			$status = 'intact';
+			$notes  = [];
+			foreach ( [ 'cssCode', 'javascriptCode' ] as $field ) {
+				$want = (string) ( $src['settings'][ $field ] ?? '' );
+				$have = (string) ( $elements[ $k ]['settings'][ $field ] ?? '' );
+				if ( $have === $want ) {
+					continue;
+				}
+				if ( stripslashes( $want ) === $have || str_replace( '\\', '', $want ) === $have ) {
+					$elements[ $k ]['settings'][ $field ] = $want;
+					$notes[] = "{$field}: put back " . ( substr_count( $want, '\\' ) - substr_count( $have, '\\' ) ) . ' backslashes';
+					$status  = 'customised' === $status ? 'customised' : 'repaired';
+					$changed = true;
+				} else {
+					$notes[] = "{$field}: changed on this site, left as it is";
+					$status  = 'customised';
+				}
+			}
+			if ( empty( $elements[ $k ]['settings']['executeCode'] ) ) {
+				$elements[ $k ]['settings']['executeCode'] = true;
+				$notes[] = 'Execute code switched on';
+				$status  = 'intact' === $status ? 'repaired' : $status;
+				$changed = true;
+			}
+			$report[] = [
+				'label'  => $label,
+				'status' => $status,
+				'notes'  => $notes,
+			];
+		}
+
+		$result = [
+			'changed'    => $changed,
+			'codeBlocks' => $report,
+		];
+		if ( ! $changed ) {
+			$result['dryRun'] = ! empty( $input['dryRun'] );
+			$result['digest'] = self::digest( $elements );
+			return $result;
+		}
+		return self::finish( $post_id, $elements, $input, $result );
+	}
+
+	/* ---------------------------------------------------------------------------------------- */
 	/* Loading and saving                                                                       */
 	/* ---------------------------------------------------------------------------------------- */
 
@@ -1673,6 +2016,225 @@ final class MMPro_AI_Abilities {
 			}
 		}
 		return false;
+	}
+
+	private static function has_any_key( array $settings, array $keys ) {
+		foreach ( $settings as $key => $value ) {
+			if ( in_array( (string) $key, $keys, true ) ) {
+				return true;
+			}
+			if ( is_array( $value ) && self::has_any_key( $value, $keys ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/* ---------------------------------------------------------------------------------------- */
+	/* Import helpers                                                                           */
+	/* ---------------------------------------------------------------------------------------- */
+
+	/** Bricks' own rule for switching code on: the site setting, then the user's role. */
+	private static function code_permission() {
+		if ( is_callable( [ '\Bricks\Helpers', 'code_execution_enabled' ] ) && ! \Bricks\Helpers::code_execution_enabled() ) {
+			return self::error( 'code_execution_off', 'Code execution is off on this site. Turn on Bricks > Settings > Custom code > Code execution, for your user role, then try again.' );
+		}
+		if ( ! class_exists( '\Bricks\Capabilities' ) || ! \Bricks\Capabilities::current_user_can_execute_code() ) {
+			return self::error( 'code_execution_off', 'Your user role may not execute code. Allow it in Bricks > Settings > Custom code > Code execution, then try again.' );
+		}
+		return true;
+	}
+
+	/**
+	 * A Mega Menu Pro header file whose code blocks hold only CSS and JavaScript.
+	 *
+	 * @return array|WP_Error The file's header elements.
+	 */
+	private static function check_template( $template ) {
+		if ( ! is_array( $template ) || 'header' !== ( $template['templateType'] ?? '' ) || empty( $template['header'] ) || ! is_array( $template['header'] ) ) {
+			return self::error( 'not_header_file', 'template must be a Bricks header template file: templateType "header" and a header element list.' );
+		}
+		$elements = array_values( $template['header'] );
+		foreach ( $elements as $element ) {
+			if ( ! is_array( $element ) || empty( $element['id'] ) || empty( $element['name'] ) ) {
+				return self::error( 'bad_file', 'Every element in the file needs an id and a name.' );
+			}
+			$settings = is_array( $element['settings'] ?? null ) ? $element['settings'] : [];
+			$name     = (string) ( $element['label'] ?? $element['id'] );
+			if ( 'code' === $element['name'] && ( ! empty( $settings['code'] ) || ! empty( $settings['useDynamicData'] ) ) ) {
+				return self::error( 'php_code', "Code block \"{$name}\" holds PHP or dynamic data. Only CSS and JavaScript code blocks are imported." );
+			}
+			if ( self::has_any_key( $settings, [ 'queryEditor', 'useQueryEditor' ] ) ) {
+				return self::error( 'query_code', "Element \"{$name}\" runs PHP through a query editor. It is not imported." );
+			}
+		}
+		if ( ! self::map( $elements )['headerPro'] ) {
+			return self::error( 'not_mmpro', 'This is not a Mega Menu Pro header: no root element labelled "Header Pro".' );
+		}
+		return $elements;
+	}
+
+	private static function unique_title( $title ) {
+		$base = $title;
+		for ( $n = 2; $n < 100 && self::title_taken( $title ); $n++ ) {
+			$title = "{$base} ({$n})";
+		}
+		return $title;
+	}
+
+	private static function title_taken( $title ) {
+		return (bool) get_posts(
+			[
+				'post_type'      => 'bricks_template',
+				'post_status'    => 'any',
+				'title'          => $title,
+				'fields'         => 'ids',
+				'posts_per_page' => 1,
+				'no_found_rows'  => true,
+			]
+		);
+	}
+
+	private static function option_key( $constant, $fallback ) {
+		return defined( $constant ) ? constant( $constant ) : $fallback;
+	}
+
+	/**
+	 * Bricks' class import: a class whose ID exists is used as it is; one whose name exists is
+	 * mapped to the site's ID; anything else is added. Existing classes are never changed.
+	 */
+	private static function plan_classes( $incoming ) {
+		$site = get_option( self::option_key( 'BRICKS_DB_GLOBAL_CLASSES', 'bricks_global_classes' ), [] );
+		$site = is_array( $site ) ? array_values( $site ) : [];
+		$ids  = [];
+		$names = [];
+		foreach ( $site as $class ) {
+			if ( is_array( $class ) ) {
+				$ids[ (string) ( $class['id'] ?? '' ) ]     = true;
+				$names[ (string) ( $class['name'] ?? '' ) ] = (string) ( $class['id'] ?? '' );
+			}
+		}
+		$plan = [
+			'classes' => $site,
+			'added'   => [],
+			'mapped'  => [],
+			'map'     => [],
+		];
+		foreach ( is_array( $incoming ) ? $incoming : [] as $class ) {
+			$id   = is_array( $class ) ? (string) ( $class['id'] ?? '' ) : '';
+			$name = is_array( $class ) ? (string) ( $class['name'] ?? '' ) : '';
+			if ( '' === $id || '' === $name || isset( $ids[ $id ] ) ) {
+				continue;
+			}
+			if ( isset( $names[ $name ] ) ) {
+				$plan['map'][ $id ] = $names[ $name ];
+				$plan['mapped'][]   = $name;
+				continue;
+			}
+			$plan['classes'][] = $class;
+			$plan['added'][]   = $name;
+			$ids[ $id ]        = true;
+			$names[ $name ]    = $id;
+		}
+		return $plan;
+	}
+
+	/**
+	 * Adds the file's variables and categories that the site lacks (by ID or name). Bricks saves the
+	 * whole list, so the site's own list is read first and never shortened.
+	 */
+	private static function plan_variables( $incoming, $incoming_categories ) {
+		$plan     = [
+			'allowed'         => true,
+			'variables'       => [],
+			'categories'      => [],
+			'added'           => 0,
+			'categoriesAdded' => 0,
+		];
+		$incoming = is_array( $incoming ) ? $incoming : [];
+		if ( ! $incoming ) {
+			return $plan;
+		}
+		// Bricks gives administrators full access without the capability on their role.
+		$full_access = is_callable( [ '\Bricks\Capabilities', 'current_user_has_full_access' ] ) && \Bricks\Capabilities::current_user_has_full_access();
+		if ( ! $full_access && is_callable( [ '\Bricks\Builder_Permissions', 'user_has_permission' ] ) && ! \Bricks\Builder_Permissions::user_has_permission( 'access_variable_manager' ) ) {
+			$plan['allowed'] = false;
+			return $plan;
+		}
+		$key  = self::option_key( 'BRICKS_DB_GLOBAL_VARIABLES', 'bricks_global_variables' );
+		$site = is_callable( [ '\Bricks\Helpers', 'get_global_variables_option' ] ) ? \Bricks\Helpers::get_global_variables_option( $key, [] ) : get_option( $key, [] );
+		$site = is_array( $site ) ? array_values( $site ) : [];
+		$ids  = [];
+		$names = [];
+		foreach ( $site as $variable ) {
+			if ( is_array( $variable ) ) {
+				$ids[ (string) ( $variable['id'] ?? '' ) ]     = true;
+				$names[ (string) ( $variable['name'] ?? '' ) ] = true;
+			}
+		}
+		foreach ( $incoming as $variable ) {
+			$id   = is_array( $variable ) ? (string) ( $variable['id'] ?? '' ) : '';
+			$name = is_array( $variable ) ? (string) ( $variable['name'] ?? '' ) : '';
+			if ( '' === $id || '' === $name || isset( $ids[ $id ] ) || isset( $names[ $name ] ) ) {
+				continue;
+			}
+			$site[]         = $variable;
+			$ids[ $id ]     = true;
+			$names[ $name ] = true;
+			$plan['added']++;
+		}
+		$plan['variables'] = $site;
+
+		$categories = get_option( self::option_key( 'BRICKS_DB_GLOBAL_VARIABLES_CATEGORIES', 'bricks_global_variables_categories' ), [] );
+		$categories = is_array( $categories ) ? array_values( $categories ) : [];
+		$cat_ids    = [];
+		foreach ( $categories as $category ) {
+			if ( is_array( $category ) ) {
+				$cat_ids[ (string) ( $category['id'] ?? '' ) ] = true;
+			}
+		}
+		foreach ( is_array( $incoming_categories ) ? $incoming_categories : [] as $category ) {
+			$id = is_array( $category ) ? (string) ( $category['id'] ?? '' ) : '';
+			if ( '' === $id || isset( $cat_ids[ $id ] ) ) {
+				continue;
+			}
+			$categories[]   = $category;
+			$cat_ids[ $id ] = true;
+			$plan['categoriesAdded']++;
+		}
+		$plan['categories'] = $categories;
+		return $plan;
+	}
+
+	private static function remap_classes( array $elements, array $map ) {
+		if ( ! $map ) {
+			return $elements;
+		}
+		if ( is_callable( [ '\Bricks\Templates', 'remap_global_class_ids_in_template_elements' ] ) ) {
+			\Bricks\Templates::remap_global_class_ids_in_template_elements( $elements, $map );
+			return $elements;
+		}
+		foreach ( $elements as &$element ) {
+			if ( is_array( $element['settings']['_cssGlobalClasses'] ?? null ) ) {
+				$element['settings']['_cssGlobalClasses'] = array_map(
+					function ( $id ) use ( $map ) {
+						return $map[ $id ] ?? $id;
+					},
+					$element['settings']['_cssGlobalClasses']
+				);
+			}
+		}
+		unset( $element );
+		return $elements;
+	}
+
+	private static function code_block_by_label( array $elements, $label ) {
+		foreach ( $elements as $element ) {
+			if ( 'code' === ( $element['name'] ?? '' ) && (string) ( $element['label'] ?? '' ) === $label ) {
+				return $element;
+			}
+		}
+		return null;
 	}
 
 	/* ---------------------------------------------------------------------------------------- */
