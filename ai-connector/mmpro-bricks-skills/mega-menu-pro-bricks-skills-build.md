@@ -223,6 +223,7 @@ instead (Full only).
 
 * `mmpro-send.mjs import` creates the header with its code blocks switched on. It has no conditions:
   assign it with `bricks/set-template-conditions`.
+* The import adds the template's "AT - Clamp Settings" variables. Never remove them.
 * `mmpro-send.mjs repair <postId> "<file>"` switches Execute code back on and puts back lost
   backslashes. It needs the file of the same version as the header. It leaves code blocks the user
   changed alone, and keeps a revision.
