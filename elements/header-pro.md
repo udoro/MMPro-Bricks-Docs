@@ -45,7 +45,7 @@ As soon as Header Pro holds a block, it moves its side padding (`--header-inline
 * **Line the rows up.** Give the content inside your row the same width as the header's container, so it lines up with the logo and the menu.
 * **The menu row's background** comes from `--header-bg`. To give the menu row a full-width block of its own, wrap the header's container in a block: that block takes `--header-bg` for you.
 * **Mega menus** open at the bottom edge of the header.
-* **On mobile**, the rows stay at the top and the mobile menu opens below them. For a mobile menu that covers the whole screen, set `data-fullscreen-mobile-menu` to `true` on Header Pro (see [Attributes](#attributes)).
+* **On mobile**, the rows stay at the top and the mobile menu opens below them. If your header is taller than 80px on phones, set `data-fullscreen-mobile-menu` to `true` on Header Pro (see [Attributes](#attributes)). Otherwise the back button bar in the menu is as tall as your header.
 * **Keep the row short on phones.** Show icons only, or move items into the mobile menu with [`data-breakin`](../moving-elements.md#data-breakin).
 * **With the AI Connector,** your agent can add a row and fill it for you.
 
