@@ -6,6 +6,18 @@ icon: arrows-retweet
 
 > To update Mega Menu Pro, use the MMPro Updater. See [Updating](https://design-with-cracka.gitbook.io/bricksmegamenupro/updating).
 
+## Version 1.4.7 - October 8, 2026
+
+_Update from 1.4.6: use the [MMPro Updater](https://design-with-cracka.gitbook.io/bricksmegamenupro/updating). To update by hand, import the template on a test site and copy the code from its **MEGA MENU Codes** and **MEDIA QUERY** code blocks (**MENU Media Query** in Lite) into your header._
+
+### Fixed
+
+* **Elements you move with the `data-breakin` or `data-breakinto` attribute** now go back in the right order when the screen gets wider.
+* **The close button stays on screen when a submenu is open** in the full-screen mobile menu, when the `data-show-toggle-always` attribute is on.
+* **The top bar of the full-screen mobile menu** no longer shows the page behind it.
+
+***
+
 ## Version 1.4.6 - October 5, 2026
 
 _Update from 1.4.5: use the [MMPro Updater](https://design-with-cracka.gitbook.io/bricksmegamenupro/updating), or just replace the CSS in the **MEGA MENU Codes** code block._

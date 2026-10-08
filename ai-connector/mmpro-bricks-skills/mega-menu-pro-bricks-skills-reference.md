@@ -4,12 +4,12 @@ icon: sparkles
 
 # AI Skills Lookup Tables
 
-Lookup tables for Mega Menu Pro + Header Builder for Bricks, version **1.4.6** (1.4.5 has the same
+Lookup tables for Mega Menu Pro + Header Builder for Bricks, version **1.4.7** (1.4.5 and 1.4.6 have the same
 attributes, options and variables), and its add-ons.
 **Never read this file in full.** Grep the section or the name you need.
 
 Values come from the shipped template files. On a site, the live element is authoritative: check
-section 10 (Fingerprint) first if the version label is not 1.4.5 or 1.4.6.
+section 10 (Fingerprint) first if the version label is not 1.4.5, 1.4.6 or 1.4.7.
 
 ***
 
@@ -20,7 +20,7 @@ site-local, names are not).
 
 | Element | `name` | Label | Global class | Tag | Notes |
 | --- | --- | --- | --- | --- | --- |
-| Header Pro | `section` | `Header Pro \| v1.4.6` (Lite: `... Lite`) | `dwc-nest-header` | `div` | Root. Header attributes (section 2). |
+| Header Pro | `section` | `Header Pro \| v1.4.7` (Lite: `... Lite`) | `dwc-nest-header` | `div` | Root. Header attributes (section 2). |
 | Container | `container` | | `dwc-nest-header__container` | | Child of Header Pro. |
 | Logowrap (link) | `div` | `Logowrap (link)` | `dwc-nest-menu__logo` | `a` | Desktop logo. Has `data-breakout-link`. |
 | Menu wrap | `div` | `Menu wrap` | `dwc-menu-wrap` | | |
