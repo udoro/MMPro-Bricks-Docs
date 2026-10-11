@@ -99,7 +99,7 @@ Tabbed Hero puts your own hero content next to the tabs.
 
 To set it up:
 
-1. On **Tabbed Nav Container**, set the `data-tabbed-hero` attribute to `true`.
+1. On **Tabbed Nav Container**, set the `data-tabbed-hero` attribute to `true` (**Style** tab, **ATTRIBUTES** group).
 2. Inside **Tabbed Nav Inner wrap**, add a **Block** element next to **Tab List wrapper**. Use a Block, not a Section.
 3. Put your hero content in the block and style it as usual.
 
@@ -116,7 +116,7 @@ Section
 
 ## Attributes
 
-Set these on the **Tabbed Nav Container** element.
+Set these on the **Tabbed Nav Container** element: select it, open the **Style** tab, then the **ATTRIBUTES** group.
 
 | Attribute | Values | What it does |
 | --- | --- | --- |
@@ -128,6 +128,7 @@ Set these on the **Tabbed Nav Container** element.
 | `data-slide-in` | `true` | Mobile. Content slides in from the side instead of opening in place. The template has it on. |
 | `data-back-text` | `auto` or your text | Mobile, with `data-slide-in`. Text of the back button. `auto` uses the tab's name. |
 | `data-tabbed-hero` | `true` | Turns on the Tabbed Hero layout. |
+| `element-outline` | `true` | Builder only. Draws dashed blue outlines around each tab and its content, so you can see where they are. Set it to `false` to hide them. It does nothing on the live site. The template has it on. |
 
 ### Examples
 

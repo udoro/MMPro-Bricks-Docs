@@ -454,7 +454,7 @@ code   "Tabbed navigation code"     CSS + JS
 | `data-back-text` | `auto` | `auto` or text | Mobile back button text, with `data-slide-in`. |
 | `data-tabbed-hero` | | `true` | Hero layout, content 70% width. |
 | `data-content-reveal` | | `wipe`, `fade-in` | Desktop reveal. Empty = none. |
-| `element-outline` | `true` | | Read by no code. Leave it. |
+| `element-outline` | `true` | `true` | Builder only: dashed outlines on tab buttons and content. No effect on the front end. |
 
 `TabbedNavConfig`: `DESKTOP_BREAKPOINT: 1201`, `DEBOUNCE_DELAY: 250`, `OPEN_FIRST_TAB: true`,
 `CLOSE_TAB_ON_MOUSEOUT: false`, `TOGGLE_ON_CLICK: false` (false = hover), `REINIT_ON_URL_CHANGE:

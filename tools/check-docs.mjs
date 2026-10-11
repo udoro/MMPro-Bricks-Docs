@@ -87,7 +87,7 @@ const documented = (name) => allDocs.includes('`' + name + '`') || allDocs.inclu
 
 // Present in the template but read by no code. Kept out of the docs until the
 // developer confirms what they are for.
-const UNEXPLAINED_ATTRS = new Set(['element-outline', 'data-tabbed-dropdown']);
+const UNEXPLAINED_ATTRS = new Set(['data-tabbed-dropdown']);
 
 const attrs = new Set();
 for (const els of Object.values(elements)) {
