@@ -1,14 +1,14 @@
 === MMPro AI Abilities ===
 Requires at least: 6.9
 Requires PHP: 7.4
-Stable tag: 0.4.1
+Stable tag: 0.5.0
 License: GPL-2.0-or-later
 
 Lets AI agents read and edit Mega Menu Pro headers in Bricks.
 
 == Description ==
 
-Adds twelve abilities to the WordPress Abilities API. The WordPress MCP Adapter makes them available to AI agents, next to Bricks' own abilities:
+Adds thirteen abilities to the WordPress Abilities API. The WordPress MCP Adapter makes them available to AI agents, next to Bricks' own abilities:
 
 * mmpro/get-header: find the Mega Menu Pro header and summarise it
 * mmpro/set-attributes: set attributes on Header Pro, the Nav (Nestable), a Dropdown or a Content element
@@ -22,8 +22,9 @@ Adds twelve abilities to the WordPress Abilities API. The WordPress MCP Adapter 
 * mmpro/set-breakpoint: move the desktop/mobile breakpoint
 * mmpro/import-header: import the Mega Menu Pro header template, with its code blocks switched on
 * mmpro/repair-code-blocks: switch the header's code blocks back on and fix them after an import or a revision restore
+* mmpro/set-template-type: switch the Mega Menu Pro Lite template between Header and Section, to put it inside another header such as Sidebar Navigation Builder
 
-Every write saves a revision, so you can undo it from the header template's Revisions panel in Bricks. Writes only work on a header template with a "Header Pro" element, and only on the menu inside Nav items or on header rows (blocks directly inside Header Pro). The header structure can't be changed. The code blocks marked "don't edit" only change through the documented breakpoint change, or when a repair puts back the template file's own code.
+Every write saves a revision, so you can undo it from the header template's Revisions panel in Bricks. To undo a switch between Header and Section, switch back. Writes only work on a header template with a "Header Pro" element, and only on the menu inside Nav items or on header rows (blocks directly inside Header Pro). The header structure can't be changed. The code blocks marked "don't edit" only change through the documented breakpoint change, or when a repair puts back the template file's own code.
 
 == Installation ==
 
@@ -35,9 +36,12 @@ You also need Bricks 2.4 or later with abilities turned on (Bricks > AI), and th
 
 == Who can use it ==
 
-An agent can only do what its WordPress user can do. Reading needs the right to edit the template. Writing also needs Bricks builder access. Changing CSS variables or JS options needs Bricks' code execution permission. Adding or removing elements needs permission to change the element count. Importing a header or repairing its code blocks needs Bricks' code execution permission too.
+An agent can only do what its WordPress user can do. Reading needs the right to edit the template. Writing also needs Bricks builder access. Changing CSS variables or JS options needs Bricks' code execution permission. Adding or removing elements needs permission to change the element count. Importing a header, repairing its code blocks, or switching it between Header and Section needs Bricks' code execution permission too.
 
 == Changelog ==
+
+= 0.5.0 =
+* Your agent can now switch the Mega Menu Pro Lite template between Header and Section, so it can put Mega Menu Pro inside another header, such as Sidebar Navigation Builder.
 
 = 0.4.1 =
 * Your agent can now add extra rows to your header, such as a top bar above the menu.

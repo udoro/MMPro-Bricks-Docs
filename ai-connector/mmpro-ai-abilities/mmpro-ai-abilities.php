@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       MMPro AI Abilities
  * Description:       Lets AI agents read and edit Mega Menu Pro headers in Bricks through the WordPress Abilities API and MCP.
- * Version:           0.4.1
+ * Version:           0.5.0
  * Update URI:        https://github.com/udoro/MMPro-Bricks-Docs
  * Requires at least: 6.9
  * Requires PHP:      7.4
@@ -20,6 +20,8 @@ defined( 'ABSPATH' ) || exit;
  * the way the builder does: revision first, Bricks' security check, then the slashed element list.
  *
  * Every write is limited to a header template whose root element is labelled "Header Pro".
+ * set-template-type is the exception: it switches a Lite template between Header and Section,
+ * as the Template Type box in WordPress does, so it can sit inside another header.
  *
  * Bricks' imports (Templates > Import and the transfer package) switch off Execute code on every
  * code block, and the transfer package also loses backslashes. import-header and
@@ -27,7 +29,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class MMPro_AI_Abilities {
 
-	const VERSION          = '0.4.1';
+	const VERSION          = '0.5.0';
 
 	/** Updates: the "Update URI" header sends WordPress's update check for this plugin here. */
 	const SLUG             = 'mmpro-ai-abilities';
@@ -415,6 +417,31 @@ final class MMPro_AI_Abilities {
 			],
 			[ 'postId', 'template' ],
 			'repair_code_blocks',
+			'can_write',
+			[ false, false, true ]
+		);
+
+		self::register(
+			'set-template-type',
+			'Switch a Lite template between Header and Section',
+			'Switch a Mega Menu Pro Lite template between Header and Section, the way the Template Type box in WordPress does: the elements move to the new type\'s storage, with their backslashes kept. As a Section template it can go inside another header, such as Sidebar Navigation Builder, through a Template element; while it is a Header, that Template element shows nothing. The other mmpro/* abilities only edit Header templates: switch to header, make the change, then switch back. A template with conditions is refused unless acknowledgeConditions is true, because as a Section it stops showing where they match and as a Header it starts. Needs Bricks code execution for this user.',
+			[
+				'postId'                => [
+					'type'        => 'integer',
+					'description' => 'Template ID of the Mega Menu Pro Lite template, from mmpro/get-header or bricks/list-templates.',
+				],
+				'type'                  => [
+					'type' => 'string',
+					'enum' => [ 'header', 'section' ],
+				],
+				'acknowledgeConditions' => [
+					'type'        => 'boolean',
+					'description' => 'Switch even though the template has conditions. Ask the user first.',
+				],
+				'dryRun'                => $dry_run,
+			],
+			[ 'postId', 'type' ],
+			'set_template_type',
 			'can_write',
 			[ false, false, true ]
 		);
@@ -1536,6 +1563,114 @@ final class MMPro_AI_Abilities {
 		return self::finish( $post_id, $elements, $input, $result );
 	}
 
+	/**
+	 * What Bricks does when the Template Type box changes (Admin::meta_box_save_post): the new type,
+	 * then the elements moved to that type's meta key, slashed so code-block backslashes survive.
+	 * Template settings and conditions stay as they are. If the copy does not match, nothing changes.
+	 */
+	public static function set_template_type( $input ) {
+		$ready = self::bricks_ready();
+		if ( is_wp_error( $ready ) ) {
+			return $ready;
+		}
+		$code = self::code_permission();
+		if ( is_wp_error( $code ) ) {
+			return $code;
+		}
+		$post_id = self::input_post_id( $input );
+		$to      = (string) ( $input['type'] ?? '' );
+		if ( ! in_array( $to, [ 'header', 'section' ], true ) ) {
+			return self::error( 'bad_value', 'type must be "header" or "section".' );
+		}
+		$post = get_post( $post_id );
+		if ( ! $post || 'bricks_template' !== $post->post_type ) {
+			return self::error( 'not_template', "Post {$post_id} is not a Bricks template." );
+		}
+		$from = (string) get_post_meta( $post_id, self::template_type_key(), true );
+		if ( ! in_array( $from, [ 'header', 'section' ], true ) ) {
+			return self::error( 'wrong_type', "Template {$post_id} is a \"{$from}\" template. Only Header and Section templates can be switched." );
+		}
+		if ( $from === $to ) {
+			return self::error( 'nothing_to_do', "Template {$post_id} is already a {$to} template." );
+		}
+
+		$from_key = self::data_key( $from );
+		$to_key   = self::data_key( $to );
+		$elements = get_post_meta( $post_id, $from_key, true );
+		if ( ! is_array( $elements ) || ! $elements ) {
+			return self::error( 'empty', "Template {$post_id} has no elements." );
+		}
+		$elements = array_values( $elements );
+		$map      = self::map( $elements );
+		if ( ! $map['headerPro'] ) {
+			return self::error( 'not_mmpro', "Template {$post_id} has no root element labelled \"Header Pro\"." );
+		}
+		$label = (string) ( $elements[ self::index( $elements )[ $map['headerPro'] ] ]['label'] ?? '' );
+		if ( false === stripos( $label, 'lite' ) ) {
+			return self::error( 'not_lite', "This is \"{$label}\", the full Mega Menu Pro template. Only the Lite template works as a Section template: import the Lite template file." );
+		}
+
+		$settings   = get_post_meta( $post_id, self::option_key( 'BRICKS_DB_TEMPLATE_SETTINGS', '_bricks_template_settings' ), true );
+		$conditions = is_array( $settings ) && is_array( $settings['templateConditions'] ?? null ) ? count( $settings['templateConditions'] ) : 0;
+		if ( $conditions && empty( $input['acknowledgeConditions'] ) ) {
+			$effect = 'section' === $to ? 'stops showing as the header where they match' : 'starts showing as the header where they match';
+			return self::error( 'has_conditions', "Template {$post_id} has {$conditions} condition(s). As a {$to} template it {$effect}. Ask the user, then call again with acknowledgeConditions true." );
+		}
+
+		$result = [
+			'postId'     => $post_id,
+			'title'      => get_the_title( $post_id ),
+			'label'      => $label,
+			'before'     => $from,
+			'after'      => $to,
+			'conditions' => $conditions,
+			'elements'   => count( $elements ),
+		];
+		if ( ! empty( $input['dryRun'] ) ) {
+			$result['dryRun'] = true;
+			return $result;
+		}
+
+		update_post_meta( $post_id, self::template_type_key(), $to );
+		// update_post_meta() unslashes; without wp_slash() backslashes in the code blocks are lost.
+		update_post_meta( $post_id, $to_key, wp_slash( $elements ) );
+		wp_cache_delete( $post_id, 'post_meta' );
+		$stored = get_post_meta( $post_id, $to_key, true );
+		$stored = is_array( $stored ) ? array_values( $stored ) : [];
+		if ( self::digest( $stored ) !== self::digest( $elements ) ) {
+			update_post_meta( $post_id, self::template_type_key(), $from );
+			delete_post_meta( $post_id, $to_key );
+			wp_cache_delete( $post_id, 'post_meta' );
+			return self::error( 'not_moved', "The elements could not be copied unchanged, so template {$post_id} stays a {$from} template." );
+		}
+		delete_post_meta( $post_id, $from_key );
+		wp_cache_delete( $post_id, 'post_meta' );
+
+		$blocks = [];
+		foreach ( $stored as $element ) {
+			if ( 'code' !== ( $element['name'] ?? '' ) ) {
+				continue;
+			}
+			$s        = is_array( $element['settings'] ?? null ) ? $element['settings'] : [];
+			$blocks[] = [
+				'label'       => (string) ( $element['label'] ?? '' ),
+				'backslashes' => substr_count( (string) ( $s['cssCode'] ?? '' ) . (string) ( $s['javascriptCode'] ?? '' ), '\\' ),
+				'executeCode' => ! empty( $s['executeCode'] ),
+			];
+		}
+
+		return array_merge(
+			$result,
+			[
+				'dryRun'     => false,
+				'persisted'  => true,
+				'codeBlocks' => $blocks,
+				'cssLoading' => class_exists( '\Bricks\Database' ) ? \Bricks\Database::get_setting( 'cssLoading' ) : null,
+				'digest'     => self::digest( $stored ),
+			]
+		);
+	}
+
 	/* ---------------------------------------------------------------------------------------- */
 	/* Loading and saving                                                                       */
 	/* ---------------------------------------------------------------------------------------- */
@@ -1553,6 +1688,14 @@ final class MMPro_AI_Abilities {
 
 	private static function template_type_key() {
 		return defined( 'BRICKS_DB_TEMPLATE_TYPE' ) ? BRICKS_DB_TEMPLATE_TYPE : '_bricks_template_type';
+	}
+
+	/** The meta key that holds a template type's elements, as Bricks picks it. */
+	private static function data_key( $type ) {
+		if ( is_callable( [ '\Bricks\Database', 'get_bricks_data_key' ] ) ) {
+			return \Bricks\Database::get_bricks_data_key( $type );
+		}
+		return 'header' === $type ? BRICKS_DB_PAGE_HEADER : self::option_key( 'BRICKS_DB_PAGE_CONTENT', '_bricks_page_content_2' );
 	}
 
 	private static function find_headers() {
@@ -1603,7 +1746,11 @@ final class MMPro_AI_Abilities {
 		if ( ! $post || 'bricks_template' !== $post->post_type ) {
 			return self::error( 'not_template', "Post {$post_id} is not a Bricks template." );
 		}
-		if ( 'header' !== get_post_meta( $post_id, self::template_type_key(), true ) ) {
+		$type = get_post_meta( $post_id, self::template_type_key(), true );
+		if ( 'section' === $type ) {
+			return self::error( 'not_header', "Template {$post_id} is a Section template. Switch it to header with mmpro/set-template-type, make the change, then switch it back." );
+		}
+		if ( 'header' !== $type ) {
 			return self::error( 'not_header', "Template {$post_id} is not a header template." );
 		}
 		$elements = get_post_meta( $post_id, BRICKS_DB_PAGE_HEADER, true );
