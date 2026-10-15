@@ -204,6 +204,15 @@ If Tabbed Navigation is on the site, change its breakpoint too (reference sectio
 Never raise the breakpoint to show the mobile menu on desktop. Set `data-offcanvas` to `true`
 instead (Full only).
 
+### Switch between Header and Section (Lite only)
+
+`mmpro/set-template-type`: `postId`, `type` (`"section"` or `"header"`). A Section template goes
+inside another header, such as Sidebar Navigation Builder, through a Template element. The other
+`mmpro/*` abilities refuse a Section template (`mmpro_not_header`): switch it to header, make the
+change, switch it back. The Template element shows nothing while it is a header. A template with
+conditions is refused until you pass `acknowledgeConditions: true`: ask the user first, because it
+stops or starts showing as the site's header. The full template is refused (`mmpro_not_lite`).
+
 ### Add a header row
 
 * A header row (a top bar, a second row) is a Bricks `block` directly inside Header Pro, above or
