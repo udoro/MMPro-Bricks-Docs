@@ -13,7 +13,7 @@ Good for:
 * Team directories (departments, people, bios)
 * Any content with several levels
 
-This page covers version **1.3.2**.
+This page covers version **1.3.2**. See what changed in each version in the [Tabbed Navigation changelog](https://design-with-cracka.gitbook.io/bricksmegamenupro/changelog/tabbed-navigation).
 
 ***
 

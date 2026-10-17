@@ -9,7 +9,7 @@ A link or button anywhere on your site can open a menu in your header. For examp
 * **On desktop**, the dropdown opens. If the header is scrolled out of view, the page scrolls up to it first.
 * **On mobile and in offcanvas mode**, the mobile menu opens and the submenu slides in.
 
-It's built into the **MEGA MENU Codes** code block, in Full and Lite, from version 1.4.8. There's nothing to turn on. Try it on the front end of your site.
+It works in Full and Lite, from version 1.4.8. There's nothing to turn on. Try it on the front end of your site.
 
 ***
 
