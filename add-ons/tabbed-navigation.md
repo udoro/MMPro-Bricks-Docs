@@ -13,7 +13,7 @@ Good for:
 * Team directories (departments, people, bios)
 * Any content with several levels
 
-This page covers version **1.3.1**.
+This page covers version **1.3.2**.
 
 ***
 
@@ -128,6 +128,7 @@ Set these on the **Tabbed Nav Container** element: select it, open the **Style**
 | `data-slide-in` | `true` | Mobile. Content slides in from the side instead of opening in place. The template has it on. |
 | `data-back-text` | `auto` or your text | Mobile, with `data-slide-in`. Text of the back button. `auto` uses the tab's name. |
 | `data-tabbed-hero` | `true` | Turns on the Tabbed Hero layout. |
+| `data-match-dropdown-width` | `false` | Desktop, for a Tabbed Hero in a mega menu. The menu item is as wide as the tab list. Set it to `false` to keep the menu item's own width. |
 | `element-outline` | `true` | Builder only. Draws dashed blue outlines around each tab and its content, so you can see where they are. Set it to `false` to hide them. It does nothing on the live site. The template has it on. |
 
 ### Examples
@@ -227,6 +228,10 @@ On mobile, `--tab-list-wrapper-bg`, `--tab-list-item-clr` and `--tab-arrow-clr` 
 * Arrow keys, Home, End, Enter and Space move between and open tabs.
 * Tabs carry ARIA labels and states for screen readers.
 * Animations respect the visitor's reduced-motion setting.
+
+**Open a tab from a link**
+
+* A link anywhere on your site can open a tab in your header. Set its URL to `#menu=`, the dropdown's name, a slash and the tab's name, such as `#menu=shop/shoes`. It needs Mega Menu Pro 1.4.8. See [Open in Menu](../open-in-menu.md).
 
 ***
 
