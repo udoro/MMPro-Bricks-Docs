@@ -7,6 +7,7 @@
 * [Mega Menu Content](mega-menu-content.md)
 * [Mobile, Offcanvas & Sidebar](mobile-offcanvas-sidebar.md)
 * [Moving Elements](moving-elements.md)
+* [Open in Menu](open-in-menu.md)
 * [Updating](updating.md)
 * [Troubleshooting](troubleshooting.md)
 

@@ -101,10 +101,15 @@ element IDs (Header Pro, Nav (Nestable), Nav items, MENU Styles / Options), attr
 JS options and `digest`. If it lists more than one header, ask the user which, then call it again with
 `postId`. If it finds none, see the build file, section 2.
 
-The label carries the version: `Header Pro | v1.4.7` is Full, `Header Pro | v1.4.7 Lite` is Lite.
-The reference describes 1.4.5 to 1.4.7. For any other version, compare the live attribute names on Header Pro
+The label carries the version: `Header Pro | v1.4.8` is Full, `Header Pro | v1.4.8 Lite` is Lite.
+The reference describes 1.4.5 to 1.4.8. For any other version, compare the live attribute names on Header Pro
 and Nav (Nestable) with the reference's Fingerprint section. Where they differ, the live element is
 authoritative and the reference is not.
+
+### A link or button that opens a header menu
+
+Set the link's URL to `#menu=<path>` (Open in Menu, 1.4.8+). Grep the reference for "Open in Menu" for
+the path format. Never add a script for it.
 
 ### When the page disagrees with the builder
 

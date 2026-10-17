@@ -4,12 +4,12 @@ icon: sparkles
 
 # AI Skills Lookup Tables
 
-Lookup tables for Mega Menu Pro + Header Builder for Bricks, version **1.4.7** (1.4.5 and 1.4.6 have the same
-attributes, options and variables), and its add-ons.
+Lookup tables for Mega Menu Pro + Header Builder for Bricks, version **1.4.8** (1.4.5 to 1.4.7 have the same
+attributes, options and variables; 1.4.8 adds Open in Menu, section 4), and its add-ons.
 **Never read this file in full.** Grep the section or the name you need.
 
 Values come from the shipped template files. On a site, the live element is authoritative: check
-section 10 (Fingerprint) first if the version label is not 1.4.5, 1.4.6 or 1.4.7.
+section 10 (Fingerprint) first if the version label is not 1.4.5 to 1.4.8.
 
 ***
 
@@ -20,7 +20,7 @@ site-local, names are not).
 
 | Element | `name` | Label | Global class | Tag | Notes |
 | --- | --- | --- | --- | --- | --- |
-| Header Pro | `section` | `Header Pro \| v1.4.7` (Lite: `... Lite`) | `dwc-nest-header` | `div` | Root. Header attributes (section 2). |
+| Header Pro | `section` | `Header Pro \| v1.4.8` (Lite: `... Lite`) | `dwc-nest-header` | `div` | Root. Header attributes (section 2). |
 | Container | `container` | | `dwc-nest-header__container` | | Child of Header Pro. |
 | Logowrap (link) | `div` | `Logowrap (link)` | `dwc-nest-menu__logo` | `a` | Desktop logo. Has `data-breakout-link`. |
 | Menu wrap | `div` | `Menu wrap` | `dwc-menu-wrap` | | |
@@ -121,6 +121,7 @@ Page-level, presence only, on the first section or div of a page: `data-no-overl
 | `data-submenu-reveal` | `slide`, `expand`, empty | Overrides the Nav value for this dropdown. |
 | `data-is-button` | presence | Button style. Rule `[data-is-button]>.brx-submenu-toggle` in MENU Styles / Options. |
 | `data-is-icon` | presence | Icon only, text kept for screen readers. Rule `[data-is-icon]>.brx-submenu-toggle`. |
+| `data-menu-id` | a name | 1.4.8+. Fixed name for Open in Menu paths (below). Not in the template: add it with `mmpro/set-attributes`. |
 
 **Mega menu Content element** (template has all five)
 
@@ -135,6 +136,22 @@ Page-level, presence only, on the first section or div of a page: `data-no-overl
 Width order: Content `data-content-width` > Nav `data-global-content-width` >
 `--dropdown-content-default-width`. A number with no unit is px. A selector copies that element's
 width. Capped at the viewport width.
+
+**Open in Menu (1.4.8+, Full and Lite)**: built into MEGA MENU Codes. Nothing to configure in the header.
+
+| Trigger | Where | Effect |
+| --- | --- | --- |
+| URL `#menu=<path>` | Any link on any page: Button, Text Link, Div/Block link, WordPress menu | Opens the path on click. `/page/#menu=<path>` opens it after that page loads. |
+| `data-open-in-menu="<path>"` | Any element | Opens the path on click. Prefer a link: a Div, or a Button with no link, is not keyboard-reachable. |
+| `window.dwcMegaMenu.openInMenu(path)` | Page JS | Promise of `true` (opened) or `false` (no match). |
+
+`<path>`: parts separated by `/`, outermost first: a top-level Dropdown, then a nested Dropdown or a
+tab (`.dwc-tabbed-nav-list__li`). Each part matches that element's `data-menu-id`, else its label in
+lowercase with every run of other characters as one `-`: "Use cases" is `use-cases`, a tab is
+`features/mobile-menu`. A path can start at any level: `#menu=<id>` alone opens the element with that
+`data-menu-id` and every dropdown and tab around it. Prefer one `data-menu-id` on the target over a full
+path. Never write `#menu:`; WordPress rejects it in menu links. Never add a script for this. On 1.4.7 or
+older the link does nothing: tell the user to update.
 
 ***
 

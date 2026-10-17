@@ -40,6 +40,7 @@ Set these on the **Dropdown** element.
 | `data-submenu-reveal` | `slide`, `expand` | How this dropdown opens on mobile, offcanvas and sidebar. Overrides the value on Nav (Nestable). Leave empty to use that value. |
 | `data-is-button` | No value | Styles the menu item as a button. Add it yourself when you need it. See [Styling](../styling.md#dropdown-item-as-a-button-or-icon). |
 | `data-is-icon` | No value | Shows only the icon. The text stays readable for screen readers. Add it yourself when you need it. |
+| `data-menu-id` | A name, such as `features` | A fixed name for [Open in Menu](../open-in-menu.md) links. Add it yourself when you need it. |
 
 The `data-last-item-is-button` attribute on Nav (Nestable) doesn't work on dropdowns. Use `data-is-button` or `data-is-icon` instead.
 

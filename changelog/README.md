@@ -6,6 +6,16 @@ icon: arrows-retweet
 
 > To update Mega Menu Pro, use the MMPro Updater. See [Updating](https://design-with-cracka.gitbook.io/bricksmegamenupro/updating).
 
+## Version 1.4.8 - October 17, 2026
+
+_Update from 1.4.7: use the [MMPro Updater](https://design-with-cracka.gitbook.io/bricksmegamenupro/updating), or just replace the JavaScript in the **MEGA MENU Codes** code block._
+
+### New
+
+* **Open in Menu.** A link or button anywhere on your site can open a menu in your header, or a tab inside it. Set the link's URL to `#menu=` and the menu item's name, for example `#menu=features`. On mobile, it opens the mobile menu too. See [Open in Menu](https://design-with-cracka.gitbook.io/bricksmegamenupro/open-in-menu).
+
+***
+
 ## Version 1.4.7 - October 8, 2026
 
 _Update from 1.4.6: use the [MMPro Updater](https://design-with-cracka.gitbook.io/bricksmegamenupro/updating). To update by hand, import the template on a test site and copy the code from its **MEGA MENU Codes** and **MEDIA QUERY** code blocks (**MENU Media Query** in Lite) into your header._
